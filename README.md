@@ -33,17 +33,26 @@ PayPal is the enforcement point: checkout creates an order with authorize-then-c
 
 ## MCP Tools
 
+PayPal requires the buyer to approve an order in its own UI before anything
+can be authorized, so checkout is necessarily two calls: `checkout()` starts
+it, `confirm_purchase()` finishes it once approval has happened.
+
 | Tool | What it does |
 |---|---|
+| `start_session(original_request)` | Pins what the user actually asked for, once, before any shopping |
 | `search_products(query, max_price)` | Finds products from the catalog |
 | `get_product(id)` | Full details for one product |
-| `checkout(product_id)` | Starts a purchase; the guard runs here |
+| `checkout(product_id)` | Runs budget/cap/category rules; if they pass, creates a PayPal order and returns an approval link |
+| `confirm_purchase(order_id)` | After buyer approval: runs the intent check, then captures or voids |
 | `get_spending_summary()` | Budget used, goal progress |
 | `get_audit_log()` | Past decisions and their reasons |
 
 ## Status
 
-Early scaffolding — see the hackathon build plan for the week-by-week roadmap.
+Backend scaffolded: FastAPI + MCP server sharing one guard core, static
+catalog, SQLite, PayPal authorize/capture/void client. See
+[`backend/README.md`](backend/README.md) for setup and run instructions.
+Frontend not started yet.
 
 ## License
 

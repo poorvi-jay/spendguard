@@ -1,0 +1,86 @@
+[
+  {
+    "id": "moist-01",
+    "name": "Unscented Daily Moisturiser",
+    "category": "skincare",
+    "price": 18.50,
+    "description": "Fragrance-free daily face moisturiser for sensitive skin. No added scent."
+  },
+  {
+    "id": "moist-02",
+    "name": "Lavender Glow Moisturiser",
+    "category": "skincare",
+    "price": 21.00,
+    "description": "Lightly scented face moisturiser with lavender and chamomile extract."
+  },
+  {
+    "id": "moist-03",
+    "name": "Ultra Hydrating Night Cream",
+    "category": "skincare",
+    "price": 34.99,
+    "description": "Rich, unscented night cream with hyaluronic acid. Dermatologist tested."
+  },
+  {
+    "id": "head-01",
+    "name": "Everyday Wireless Earbuds",
+    "category": "electronics",
+    "price": 39.00,
+    "description": "Basic wireless earbuds with 20-hour battery life."
+  },
+  {
+    "id": "head-02",
+    "name": "Studio Pro Noise-Cancelling Headphones",
+    "category": "electronics",
+    "price": 329.00,
+    "description": "Premium over-ear headphones with active noise cancellation."
+  },
+  {
+    "id": "book-01",
+    "name": "Deep Work",
+    "category": "books",
+    "price": 14.99,
+    "description": "Paperback on focused, distraction-free work."
+  },
+  {
+    "id": "book-02",
+    "name": "The Pragmatic Programmer (20th Anniversary)",
+    "category": "books",
+    "price": 44.99,
+    "description": "Hardcover anniversary edition."
+  },
+  {
+    "id": "home-01",
+    "name": "Ceramic Pour-Over Coffee Set",
+    "category": "home",
+    "price": 28.00,
+    "description": "Hand-glazed ceramic dripper, server, and filter holder."
+  },
+  {
+    "id": "home-02",
+    "name": "Smart Thermostat",
+    "category": "home",
+    "price": 189.00,
+    "description": "Wi-Fi smart thermostat with learning schedule."
+  },
+  {
+    "id": "wine-01",
+    "name": "Reserve Cabernet Sauvignon",
+    "category": "alcohol",
+    "price": 32.00,
+    "description": "Bottle of reserve cabernet sauvignon, 750ml."
+  },
+  {
+    "id": "gift-01",
+    "name": "$50 Gift Card",
+    "category": "gift-cards",
+    "price": 50.00,
+    "description": "Digital gift card, redeemable storewide."
+  },
+  {
+    "id": "shoe-01",
+    "name": "Running Shoes - Everyday Trainer",
+    "category": "apparel",
+    "price": 72.00,
+    "description": "Lightweight daily running trainer."
+  }
+]
