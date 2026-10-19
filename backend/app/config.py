@@ -3,9 +3,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 BACKEND_DIR = Path(__file__).resolve().parent.parent
+
+# Explicit path so MCP clients like Claude Desktop, which launch the server
+# from their own working directory, still pick up backend/.env.
+load_dotenv(BACKEND_DIR / ".env")
 
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
@@ -17,7 +19,8 @@ LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.deepseek.com")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
 
-DB_PATH = os.getenv("DB_PATH", str(BACKEND_DIR / "spendguard.db"))
+_db_path = Path(os.getenv("DB_PATH", "spendguard.db"))
+DB_PATH = str(_db_path if _db_path.is_absolute() else BACKEND_DIR / _db_path)
 CATALOG_PATH = BACKEND_DIR / "data" / "catalog.json"
 
 

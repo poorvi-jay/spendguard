@@ -155,7 +155,12 @@ def confirm_purchase(order_id: str) -> dict:
     )
     conn.commit()
 
-    intent_result = guard.check_intent(product, session["original_request"])
+    # Fail closed: if the intent check can't run, the money must not move,
+    # and the authorization must not be left dangling either.
+    try:
+        intent_result = guard.check_intent(product, session["original_request"])
+    except Exception as e:
+        intent_result = guard.IntentCheckResult(matches=False, reason=f"Intent check failed, blocking by default: {e}")
 
     if intent_result.matches:
         paypal_client.capture_authorization(authorization_id)
