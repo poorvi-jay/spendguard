@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS settings (
     blocked_categories TEXT NOT NULL DEFAULT '["alcohol"]',
     savings_goal_name TEXT NOT NULL DEFAULT 'Emergency fund',
     savings_goal_target REAL NOT NULL DEFAULT 1000.0,
-    savings_goal_saved REAL NOT NULL DEFAULT 0.0
+    savings_goal_saved REAL NOT NULL DEFAULT 0.0,
+    monthly_savings REAL NOT NULL DEFAULT 300.0
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -22,12 +23,14 @@ CREATE TABLE IF NOT EXISTS orders (
     amount REAL NOT NULL,
     status TEXT NOT NULL,
     authorization_id TEXT,
+    decision_reason TEXT,
     created_at TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS audit_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id TEXT,
+    order_id TEXT,
     product_id TEXT,
     product_name TEXT,
     amount REAL,

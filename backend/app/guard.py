@@ -57,7 +57,23 @@ def check_rules(product: dict, settings: dict, spent_this_month: float) -> RuleC
     return RuleCheckResult("pass", "Within budget and per-purchase cap.")
 
 
-_INTENT_SYSTEM_PROMPT = """You are a purchase-intent checker. You are given the user's ORIGINAL \
+def goal_impact(price: float, settings: dict) -> Optional[dict]:
+    """How many days of saving this purchase costs the user's savings goal."""
+    daily_savings = settings["monthly_savings"] / 30
+    if daily_savings <= 0:
+        return None
+
+    days = round(price / daily_savings, 1)
+    remaining = max(settings["savings_goal_target"] - settings["savings_goal_saved"], 0)
+    return {
+        "days_delayed": days,
+        "message": f"This delays your '{settings['savings_goal_name']}' goal by about {days:g} days.",
+        "days_to_goal_before": round(remaining / daily_savings, 1),
+        "days_to_goal_after": round((remaining + price) / daily_savings, 1),
+    }
+
+
+_INTENT_SYSTEM_PROMPT ="""You are a purchase-intent checker. You are given the user's ORIGINAL \
 REQUEST (captured before any shopping happened) and a PRODUCT an agent is about to buy on their \
 behalf. Decide whether the product actually satisfies the original request, including any \
 specific constraints it mentions (e.g. "unscented", "under $25", a specific brand or color). \

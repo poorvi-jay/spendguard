@@ -45,23 +45,38 @@ To point Claude Desktop at it, add to `claude_desktop_config.json`:
 }
 ```
 
+## Tests
+
+```bash
+python -m pytest -q
+```
+
+PayPal and the LLM are faked in tests, so no keys are needed.
+
 ## Manual smoke test of the PayPal flow
 
 Before wiring anything else up, confirm the sandbox authorize/capture/void
 flow works end to end:
 
 ```bash
-python -c "
-from app import paypal_client
-order = paypal_client.create_order(18.50)
-print('Approve at:', order['approval_url'])
-input('Press enter after approving as the sandbox buyer...')
-auth_id = paypal_client.authorize_order(order['order_id'])
-print('authorization_id:', auth_id)
-paypal_client.capture_authorization(auth_id)
-print('captured')
-"
+python scripts/paypal_smoke.py capture
+python scripts/paypal_smoke.py void
 ```
+
+Use US sandbox accounts (Business + Personal) and an app linked to the US
+Business account; non-US default accounts can reject USD orders.
+
+## Guard behaviour worth knowing
+
+- **Sessions are pinned.** An agent can only call `start_session` when no
+  session is active, so it can't rewrite what the user asked for mid-task.
+  The web app (`POST /session`) can replace it; `DELETE /session` ends it.
+  A session ends on its first approved purchase, or after 2 hours.
+- **Fails closed.** If the intent check errors, the authorization is voided.
+- **Rules run twice**: at checkout, and again right before capture.
+- **`confirm_purchase` is idempotent.** PayPal's return redirect
+  (`/checkout/return`) confirms immediately; an agent confirming afterwards
+  gets the same decision back.
 
 ## Demo flow via MCP tools
 

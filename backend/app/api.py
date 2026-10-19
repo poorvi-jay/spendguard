@@ -29,6 +29,7 @@ class SettingsUpdate(BaseModel):
     savings_goal_name: Optional[str] = None
     savings_goal_target: Optional[float] = None
     savings_goal_saved: Optional[float] = None
+    monthly_savings: Optional[float] = None
 
 
 class StartSessionBody(BaseModel):
@@ -52,7 +53,20 @@ def update_settings(body: SettingsUpdate):
 
 @app.post("/session")
 def start_session(body: StartSessionBody):
-    return core.start_session(body.original_request)
+    # The web app is the user, so it may replace an active session. Agents
+    # going through MCP can't (see core.start_session).
+    return core.start_session(body.original_request, replace=True)
+
+
+@app.get("/session")
+def get_session():
+    return core.get_active_session()
+
+
+@app.delete("/session")
+def end_session():
+    core.end_session()
+    return {"status": "ended"}
 
 
 @app.get("/products")
@@ -84,8 +98,10 @@ def confirm_purchase(order_id: str):
 @app.get("/checkout/return")
 def checkout_return(token: str):
     """PayPal redirects the buyer here (return_url) after approval. `token`
-    is the order_id. The frontend should read it and call /confirm."""
-    return {"order_id": token, "next": f"POST /checkout/{token}/confirm"}
+    is the order_id, so the guard can decide right away. confirm_purchase is
+    idempotent, so an agent confirming the same order later just gets this
+    same decision back."""
+    return {"order_id": token, **core.confirm_purchase(token)}
 
 
 @app.get("/checkout/cancel")

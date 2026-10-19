@@ -18,7 +18,8 @@ mcp = MCPServer("SpendGuard")
 def start_session(original_request: str) -> dict:
     """Record what the user actually asked for, before any shopping happens.
     Call this once at the start of a shopping task -- every later checkout()
-    is checked against this, not against whatever the agent says later."""
+    is checked against this, not against whatever the agent says later.
+    Fails if a session is already active: only the user can replace it."""
     return core.start_session(original_request)
 
 
@@ -46,7 +47,8 @@ def checkout(product_id: str) -> dict:
 @mcp.tool()
 def confirm_purchase(order_id: str) -> dict:
     """Call after the buyer has approved the order in PayPal's UI. Runs the
-    final intent-match check and either captures or voids the payment."""
+    final intent-match check and either captures or voids the payment.
+    Safe to call again: a decided order returns its original decision."""
     return core.confirm_purchase(order_id)
 
 
