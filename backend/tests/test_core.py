@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
+import httpx
+
 from app import core
 from app.db import get_connection
 
@@ -54,6 +56,18 @@ def test_checkout_reports_goal_impact(paypal):
     result = core.checkout("moist-01")
     assert result["status"] == "pending_approval"
     assert result["goal_impact"]["days_delayed"] > 0
+
+
+def test_paypal_error_is_reported_not_raised(monkeypatch):
+    def fail(amount):
+        request = httpx.Request("POST", "https://api-m.sandbox.paypal.com/v1/oauth2/token")
+        raise httpx.HTTPStatusError("401", request=request, response=httpx.Response(401, request=request))
+
+    monkeypatch.setattr(core.paypal_client, "create_order", fail)
+    core.start_session(REQUEST)
+    result = core.checkout("moist-01")
+    assert result["status"] == "error"
+    assert "401" in result["reason"]
 
 
 def test_matching_purchase_is_captured_and_ends_session(paypal, intent):

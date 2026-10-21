@@ -161,7 +161,11 @@ def checkout(product_id: str) -> dict:
             "goal_impact": impact,
         }
 
-    order = paypal_client.create_order(product["price"])
+    try:
+        order = paypal_client.create_order(product["price"])
+    except httpx.HTTPStatusError as e:
+        # Surface PayPal's failure to the agent instead of a bare "Error executing tool".
+        return {"status": "error", "reason": f"PayPal rejected the request: {e.response.status_code} {e.request.url}"}
     conn = get_connection()
     conn.execute(
         "INSERT INTO orders (order_id, session_id, product_id, amount, status, created_at) "
