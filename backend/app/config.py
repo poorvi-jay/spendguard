@@ -15,9 +15,9 @@ PAYPAL_API_BASE = os.getenv("PAYPAL_API_BASE", "https://api-m.sandbox.paypal.com
 PAYPAL_RETURN_URL = os.getenv("PAYPAL_RETURN_URL", "http://localhost:8000/checkout/return")
 PAYPAL_CANCEL_URL = os.getenv("PAYPAL_CANCEL_URL", "http://localhost:8000/checkout/cancel")
 
-LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.deepseek.com")
+LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.openai.com/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
+LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
 
 _db_path = Path(os.getenv("DB_PATH", "spendguard.db"))
 DB_PATH = str(_db_path if _db_path.is_absolute() else BACKEND_DIR / _db_path)

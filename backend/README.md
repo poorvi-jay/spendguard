@@ -15,7 +15,7 @@ cp .env.example .env
 Fill in `.env`:
 - `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` -- from a sandbox REST app at
   https://developer.paypal.com/dashboard/applications/sandbox
-- `LLM_API_KEY` -- DeepSeek (or swap `LLM_API_BASE`/`LLM_MODEL` for any
+- `LLM_API_KEY` -- OpenAI (or swap `LLM_API_BASE`/`LLM_MODEL` for any
   OpenAI-compatible chat completions endpoint)
 
 The SQLite file and its schema are created automatically on first run.

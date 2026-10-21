@@ -27,7 +27,7 @@ PayPal is the enforcement point: checkout creates an order with authorize-then-c
 | Backend | Python + FastAPI |
 | MCP server | Official MCP Python SDK, served over HTTP on Render |
 | Payments | PayPal Orders API (authorize, capture, void) + webhooks |
-| LLM | Intent-check for guard decisions, agent for the web app |
+| LLM | OpenAI `gpt-4o-mini` (any OpenAI-compatible API works): intent check for guard decisions, agent for the web app |
 | Storage | SQLite for settings, sessions, and audit log |
 | Frontend | React app on Vercel |
 
