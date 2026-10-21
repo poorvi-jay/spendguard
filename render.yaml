@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: spendguard
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Secrets: Render asks for these in the Dashboard on first deploy.
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: LLM_API_KEY
+        sync: false
+      # Not generateValue: that's base64, and "+" breaks the ?token= URL form.
+      - key: MCP_AUTH_TOKEN
+        sync: false

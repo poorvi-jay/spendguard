@@ -12,8 +12,10 @@ load_dotenv(BACKEND_DIR / ".env")
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET", "")
 PAYPAL_API_BASE = os.getenv("PAYPAL_API_BASE", "https://api-m.sandbox.paypal.com")
-PAYPAL_RETURN_URL = os.getenv("PAYPAL_RETURN_URL", "http://localhost:8000/checkout/return")
-PAYPAL_CANCEL_URL = os.getenv("PAYPAL_CANCEL_URL", "http://localhost:8000/checkout/cancel")
+# Render sets RENDER_EXTERNAL_URL to the service's public URL.
+PUBLIC_URL = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8000")
+PAYPAL_RETURN_URL = os.getenv("PAYPAL_RETURN_URL", f"{PUBLIC_URL}/checkout/return")
+PAYPAL_CANCEL_URL = os.getenv("PAYPAL_CANCEL_URL", f"{PUBLIC_URL}/checkout/cancel")
 
 LLM_API_BASE = os.getenv("LLM_API_BASE", "https://api.openai.com/v1")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
