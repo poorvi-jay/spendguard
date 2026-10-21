@@ -20,13 +20,18 @@ Fill in `.env`:
 
 The SQLite file and its schema are created automatically on first run.
 
-## Run the REST API (for the web frontend)
+## Run the API + hosted MCP server
 
 ```bash
-uvicorn app.api:app --reload --port 8000
+python -m uvicorn app.api:app --reload --port 8000
 ```
 
-## Run the MCP server (for Claude Desktop / any MCP client)
+This serves the REST API for the web app and the same MCP tools over
+streamable HTTP at `http://localhost:8000/mcp`. Set `MCP_AUTH_TOKEN` in
+`.env` to require it as `Authorization: Bearer <token>` or `/mcp?token=<token>`
+(the second form is for clients that only take a URL).
+
+## Run the MCP server locally over stdio (Claude Desktop)
 
 ```bash
 python run_mcp.py

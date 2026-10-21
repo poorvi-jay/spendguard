@@ -1,17 +1,58 @@
 """
-REST API for the web frontend. Mirrors the MCP tool surface in
-app/mcp_server.py -- both call the same functions in app/core.py.
+REST API for the web frontend, plus the MCP server over streamable HTTP at
+/mcp for remote agents. Both call the same functions in app/core.py.
 """
 
+import hmac
+from contextlib import asynccontextmanager
 from typing import Optional
+from urllib.parse import parse_qs
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from app import core
+from app.config import MCP_AUTH_TOKEN
+from app.mcp_server import mcp
 
-app = FastAPI(title="SpendGuard API")
+# Stateless so any instance can answer any request and a restart drops no
+# client sessions. host="0.0.0.0" turns off the SDK's localhost-only Host
+# check, which would reject Render's public hostname; the token check below
+# is what keeps /mcp private instead.
+mcp_app = mcp.streamable_http_app(stateless_http=True, json_response=True, host="0.0.0.0")
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    async with mcp.session_manager.run():
+        yield
+
+
+app = FastAPI(title="SpendGuard API", lifespan=lifespan)
+
+
+class MCPTokenMiddleware:
+    """Requires MCP_AUTH_TOKEN on /mcp, as a bearer header or ?token= (some
+    MCP clients can only be given a URL)."""
+
+    def __init__(self, asgi_app):
+        self.app = asgi_app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http" and scope["path"].startswith("/mcp") and MCP_AUTH_TOKEN:
+            headers = dict(scope["headers"])
+            supplied = headers.get(b"authorization", b"").decode().removeprefix("Bearer ").strip()
+            if not supplied:
+                supplied = parse_qs(scope.get("query_string", b"").decode()).get("token", [""])[0]
+            if not hmac.compare_digest(supplied, MCP_AUTH_TOKEN):
+                await send({"type": "http.response.start", "status": 401, "headers": [(b"content-type", b"application/json")]})
+                await send({"type": "http.response.body", "body": b'{"error": "missing or invalid MCP token"}'})
+                return
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(MCPTokenMiddleware)
 
 # TODO narrow this to the deployed frontend origin before submitting.
 app.add_middleware(
@@ -127,3 +168,12 @@ def get_spending_summary():
 @app.get("/audit-log")
 def get_audit_log():
     return core.get_audit_log()
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+# Last, so every route above wins; this only serves /mcp.
+app.mount("/", mcp_app)

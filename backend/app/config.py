@@ -23,6 +23,10 @@ _db_path = Path(os.getenv("DB_PATH", "spendguard.db"))
 DB_PATH = str(_db_path if _db_path.is_absolute() else BACKEND_DIR / _db_path)
 CATALOG_PATH = BACKEND_DIR / "data" / "catalog.json"
 
+# Shared secret for the hosted /mcp endpoint. Unset means no check, which is
+# only meant for local development.
+MCP_AUTH_TOKEN = os.getenv("MCP_AUTH_TOKEN", "")
+
 
 def require_paypal_credentials() -> None:
     if not PAYPAL_CLIENT_ID or not PAYPAL_CLIENT_SECRET:
