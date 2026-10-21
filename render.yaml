@@ -20,3 +20,5 @@ services:
       # Not generateValue: that's base64, and "+" breaks the ?token= URL form.
       - key: MCP_AUTH_TOKEN
         sync: false
+      - key: APP_PASSWORD
+        sync: false

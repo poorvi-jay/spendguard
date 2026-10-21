@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpendGuard</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #1b1f24; --muted: #5b6470; --line: #dde1e6;
+    --accent: #0b5cad; --ok: #1a7f37; --warn: #9a6700; --bad: #c62828; --chip: #eef1f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --panel: #191d22; --text: #e6e9ec; --muted: #9aa4af; --line: #2c333b;
+      --accent: #5aa2ee; --ok: #4ac26b; --warn: #d4a72c; --bad: #ff6b6b; --chip: #232931;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--panel); }
+  header h1 { margin: 0; font-size: 18px; }
+  header .tag { color: var(--muted); font-size: 13px; }
+  #summary { margin-left: auto; display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
+  #summary b { color: var(--text); font-weight: 600; }
+  nav { display: flex; gap: 4px; padding: 10px 20px 0; max-width: 900px; margin: 0 auto; }
+  nav button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; font: inherit; color: var(--muted); cursor: pointer; }
+  nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px 20px 40px; }
+  section[hidden] { display: none; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  #messages { display: flex; flex-direction: column; gap: 10px; min-height: 260px; max-height: 60vh; overflow-y: auto; }
+  .msg { max-width: 85%; padding: 9px 13px; border-radius: 10px; white-space: pre-wrap; }
+  .msg.user { align-self: flex-end; background: var(--accent); color: #fff; }
+  .msg.assistant { align-self: flex-start; background: var(--chip); }
+  .event { align-self: flex-start; font-size: 13px; border-left: 3px solid var(--line); padding: 4px 10px; color: var(--muted); }
+  .event.approved, .event.pending_approval { border-color: var(--ok); }
+  .event.nudge { border-color: var(--warn); }
+  .event.blocked, .event.error { border-color: var(--bad); }
+  .event strong { color: var(--text); }
+  .empty { color: var(--muted); margin: auto; text-align: center; }
+  form.chat { display: flex; gap: 8px; margin-top: 12px; }
+  input, button.primary, button.secondary { font: inherit; border-radius: 8px; }
+  input { padding: 9px 11px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
+  button.primary, a.primary { background: var(--accent); color: #fff; border: 0; padding: 9px 16px; cursor: pointer; text-decoration: none; display: inline-block; border-radius: 8px; white-space: nowrap; }
+  button.secondary { background: none; border: 1px solid var(--line); color: var(--text); padding: 8px 14px; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .row p { margin: 0; color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); }
+  label input { margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--chip); }
+  .badge.approved { color: var(--ok); } .badge.nudge { color: var(--warn); } .badge.blocked { color: var(--bad); }
+  #login { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #login[hidden] { display: none; }
+  #login form { max-width: 340px; width: 100%; }
+  #login h2 { margin: 0 0 6px; font-size: 17px; }
+  #login p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  .status { font-size: 13px; color: var(--muted); min-height: 1.5em; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SpendGuard</h1>
+  <span class="tag">Guardrails for AI agents that spend money</span>
+  <div id="summary" aria-live="polite"></div>
+</header>
+
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-tab="chat">Shop</button>
+  <button role="tab" aria-selected="false" data-tab="settings">Settings</button>
+  <button role="tab" aria-selected="false" data-tab="audit">Audit log</button>
+</nav>
+
+<main>
+  <section id="tab-chat">
+    <div class="panel">
+      <div class="row">
+        <p>Your first message is pinned as the request every purchase is checked against.</p>
+        <button class="secondary" id="new-request" type="button">New request</button>
+      </div>
+      <div id="messages" aria-live="polite"></div>
+      <form class="chat" id="chat-form">
+        <input id="chat-input" aria-label="Message to the shopping agent" autocomplete="off" placeholder="e.g. Get me an unscented moisturiser under $25" required>
+        <button class="primary" type="submit">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="tab-settings" hidden>
+    <form class="panel" id="settings-form">
+      <div class="grid">
+        <label>Monthly budget ($)<input name="monthly_budget" type="number" step="0.01" min="0"></label>
+        <label>Per-purchase cap ($)<input name="per_purchase_cap" type="number" step="0.01" min="0"></label>
+        <label>Blocked categories (comma-separated)<input name="blocked_categories"></label>
+        <label>Savings goal<input name="savings_goal_name"></label>
+        <label>Goal target ($)<input name="savings_goal_target" type="number" step="0.01" min="0"></label>
+        <label>Saved so far ($)<input name="savings_goal_saved" type="number" step="0.01" min="0"></label>
+        <label>Saving per month ($)<input name="monthly_savings" type="number" step="0.01" min="0"></label>
+      </div>
+      <p class="status" id="settings-status" aria-live="polite"></p>
+      <button class="primary" type="submit">Save settings</button>
+    </form>
+  </section>
+
+  <section id="tab-audit" hidden>
+    <div class="panel">
+      <table>
+        <thead><tr><th>When</th><th>Product</th><th>Amount</th><th>Decision</th><th>Reason</th></tr></thead>
+        <tbody id="audit-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div id="login" hidden>
+  <form class="panel" id="login-form">
+    <h2>Enter the SpendGuard password</h2>
+    <p>It's set as APP_PASSWORD on the server.</p>
+    <label>Password<input id="login-password" type="password" required autocomplete="current-password"></label>
+    <p class="status" id="login-status" aria-live="polite"></p>
+    <button class="primary" type="submit">Continue</button>
+  </form>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = (area, key, value) => { try { return value === undefined ? area.getItem(key) : area.setItem(key, value); } catch { return null; } };
+let password = store(localStorage, "sg_password") || "";
+let messages = JSON.parse(store(sessionStorage, "sg_chat") || "[]");  // survives the trip to PayPal and back
+const saveChat = () => store(sessionStorage, "sg_chat", JSON.stringify(messages));
+
+async function api(path, options = {}) {
+  const res = await fetch(path, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${password}` } });
+  if (res.status === 401) { showLogin("Wrong or missing password."); throw new Error("unauthorized"); }
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+function showLogin(text = "") { $("login-status").textContent = text; $("login").hidden = false; $("login-password").focus(); }
+$("login-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  password = $("login-password").value;
+  store(localStorage, "sg_password", password);
+  $("login").hidden = true;
+  refresh();
+});
+
+// ---- tabs
+document.querySelectorAll("nav button").forEach((tab) => tab.addEventListener("click", () => {
+  document.querySelectorAll("nav button").forEach((t) => t.setAttribute("aria-selected", t === tab));
+  document.querySelectorAll("main section").forEach((s) => (s.hidden = s.id !== `tab-${tab.dataset.tab}`));
+  if (tab.dataset.tab === "audit") loadAudit();
+  if (tab.dataset.tab === "settings") loadSettings();
+}));
+
+// ---- chat
+const money = (n) => `$${Number(n).toFixed(2)}`;
+
+function eventText(ev) {
+  const r = ev.result || {};
+  if (ev.tool !== "checkout" && ev.tool !== "confirm_purchase") return null;
+  const parts = [];
+  if (r.status === "pending_approval") parts.push("Rules passed. Waiting for your approval in PayPal.");
+  else if (r.status === "approved") parts.push(`Approved: ${r.reason}`);
+  else parts.push(`${r.status}: ${r.reason || ""}`);
+  if (r.alternative) parts.push(`Suggested instead: ${r.alternative.name} (${money(r.alternative.price)}).`);
+  if (r.goal_impact) parts.push(r.goal_impact.message);
+  return { status: r.status, text: parts.join(" "), approvalUrl: r.approval_url };
+}
+
+function renderChat() {
+  const box = $("messages");
+  box.replaceChildren();
+  if (!messages.length) {
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Tell the agent what to buy. SpendGuard checks every purchase before money moves.";
+    box.append(p);
+  }
+  for (const m of messages) {
+    for (const ev of m.events || []) {
+      const info = eventText(ev);
+      if (!info) continue;
+      const div = document.createElement("div");
+      div.className = `event ${info.status}`;
+      const label = document.createElement("strong");
+      label.textContent = "SpendGuard  ";
+      div.append(label, info.text);
+      if (info.approvalUrl) {
+        const a = document.createElement("a");
+        a.className = "primary"; a.href = info.approvalUrl; a.textContent = "Approve in PayPal";
+        a.style.marginLeft = "10px";
+        div.append(a);
+      }
+      box.append(div);
+    }
+    const div = document.createElement("div");
+    div.className = `msg ${m.role}`;
+    div.textContent = m.content;
+    box.append(div);
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+$("chat-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = $("chat-input");
+  const button = e.submitter;
+  messages.push({ role: "user", content: input.value.trim() });
+  input.value = "";
+  saveChat(); renderChat();
+  button.disabled = true;
+  try {
+    const plain = messages.map(({ role, content }) => ({ role, content }));
+    const res = await api("/chat", { method: "POST", body: JSON.stringify({ messages: plain }) });
+    messages.push({ role: "assistant", content: res.reply || "(no reply)", events: res.events });
+  } catch (err) {
+    if (err.message !== "unauthorized") messages.push({ role: "assistant", content: `Something went wrong: ${err.message}` });
+  }
+  button.disabled = false;
+  saveChat(); renderChat(); loadSummary();
+});
+
+$("new-request").addEventListener("click", async () => {
+  messages = []; saveChat(); renderChat();
+  try { await api("/session", { method: "DELETE" }); } catch {}
+  $("chat-input").focus();
+});
+
+// Back from PayPal: /checkout/return already ran the guard and sent us here with its decision.
+const params = new URLSearchParams(location.search);
+if (params.get("status")) {
+  const status = params.get("status");
+  const text = status === "approved"
+    ? `SpendGuard approved the purchase and PayPal captured the payment. ${params.get("reason")}`
+    : `SpendGuard ${status === "cancelled" ? "saw you cancel" : `${status} the purchase`}: ${params.get("reason")} No money moved.`;
+  messages.push({ role: "assistant", content: text, events: [] });
+  saveChat();
+  history.replaceState(null, "", "/");
+}
+
+// ---- settings, summary, audit
+async function loadSettings() {
+  const s = await api("/settings");
+  for (const input of $("settings-form").elements) {
+    if (!input.name) continue;
+    input.value = Array.isArray(s[input.name]) ? s[input.name].join(", ") : s[input.name];
+  }
+}
+
+$("settings-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const body = {};
+  for (const input of e.target.elements) {
+    if (!input.name) continue;
+    body[input.name] = input.name === "blocked_categories"
+      ? input.value.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean)
+      : input.type === "number" ? Number(input.value) : input.value;
+  }
+  try { await api("/settings", { method: "PUT", body: JSON.stringify(body) }); $("settings-status").textContent = "Saved."; loadSummary(); }
+  catch (err) { $("settings-status").textContent = `Couldn't save: ${err.message}`; }
+});
+
+async function loadSummary() {
+  const s = await api("/summary");
+  const box = $("summary");
+  box.replaceChildren();
+  for (const [label, value] of [["Spent", `${money(s.spent_this_month)} of ${money(s.monthly_budget)}`],
+                                 [s.savings_goal_name, `${money(s.savings_goal_saved)} of ${money(s.savings_goal_target)}`]]) {
+    const span = document.createElement("span");
+    const b = document.createElement("b");
+    b.textContent = value;
+    span.append(`${label}: `, b);
+    box.append(span);
+  }
+}
+
+async function loadAudit() {
+  const rows = await api("/audit-log");
+  const body = $("audit-body");
+  body.replaceChildren();
+  if (!rows.length) {
+    const tr = body.insertRow(); const td = tr.insertCell();
+    td.colSpan = 5; td.textContent = "No decisions yet."; td.style.color = "var(--muted)";
+  }
+  for (const r of rows) {
+    const tr = body.insertRow();
+    tr.insertCell().textContent = new Date(r.created_at).toLocaleString();
+    tr.insertCell().textContent = r.product_name;
+    tr.insertCell().textContent = money(r.amount);
+    const badge = document.createElement("span");
+    badge.className = `badge ${r.decision}`; badge.textContent = r.decision;
+    tr.insertCell().append(badge);
+    tr.insertCell().textContent = r.reason;
+  }
+}
+
+function refresh() { renderChat(); loadSummary().catch(() => {}); }
+refresh();
+</script>
+</body>
+</html>

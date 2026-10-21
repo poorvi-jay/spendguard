@@ -26,10 +26,17 @@ The SQLite file and its schema are created automatically on first run.
 python -m uvicorn app.api:app --reload --port 8000
 ```
 
-This serves the REST API for the web app and the same MCP tools over
-streamable HTTP at `http://localhost:8000/mcp`. Set `MCP_AUTH_TOKEN` in
-`.env` to require it as `Authorization: Bearer <token>` or `/mcp?token=<token>`
-(the second form is for clients that only take a URL).
+This serves the web app at `http://localhost:8000`, its REST API, and the
+same MCP tools over streamable HTTP at `http://localhost:8000/mcp`.
+
+Two secrets, both sent as `Authorization: Bearer <value>` or `?token=<value>`
+(the second form is for MCP clients that only take a URL):
+- `MCP_AUTH_TOKEN` protects `/mcp` (agents).
+- `APP_PASSWORD` protects the web app's API (the user). It's separate so an
+  agent holding the MCP token can't use the REST API to replace the pinned
+  session.
+
+Empty means no check, for local dev. On Render a missing secret returns 503.
 
 ## Run the MCP server locally over stdio (Claude Desktop)
 
@@ -80,8 +87,11 @@ Business account; non-US default accounts can reject USD orders.
 - **Fails closed.** If the intent check errors, the authorization is voided.
 - **Rules run twice**: at checkout, and again right before capture.
 - **`confirm_purchase` is idempotent.** PayPal's return redirect
-  (`/checkout/return`) confirms immediately; an agent confirming afterwards
-  gets the same decision back.
+  (`/checkout/return`) confirms immediately and sends the browser to the web
+  app with the decision; an agent confirming afterwards gets the same
+  decision back.
+- **The web app's agent can't choose the request either.** `/chat` pins the
+  user's own first message as the session, server-side.
 
 ## Demo flow via MCP tools
 

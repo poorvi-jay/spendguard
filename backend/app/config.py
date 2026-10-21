@@ -28,6 +28,10 @@ CATALOG_PATH = BACKEND_DIR / "data" / "catalog.json"
 # Shared secret for the hosted /mcp endpoint. Unset means no check, which is
 # only meant for local development.
 MCP_AUTH_TOKEN = os.getenv("MCP_AUTH_TOKEN", "")
+# Password for the web app and REST API (the user, as opposed to agents).
+APP_PASSWORD = os.getenv("APP_PASSWORD", "")
+# Render sets RENDER=true; there, a missing secret fails closed instead of open.
+ON_RENDER = bool(os.getenv("RENDER"))
 
 
 def require_paypal_credentials() -> None:

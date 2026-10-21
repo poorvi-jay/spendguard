@@ -11,15 +11,18 @@ def _load() -> list[dict]:
 
 
 def search_products(query: str = "", max_price: Optional[float] = None) -> list[dict]:
-    query = query.lower().strip()
-    results = []
+    """Products matching any query word, best matches first. Agents search in phrases, not exact names."""
+    words = [w for w in query.lower().split() if len(w) > 2]
+    scored = []
     for product in _load():
-        if query and query not in product["name"].lower() and query not in product["description"].lower():
-            continue
         if max_price is not None and product["price"] > max_price:
             continue
-        results.append(product)
-    return results
+        text = f"{product['name']} {product['description']} {product['category']}".lower()
+        score = sum(w in text for w in words)
+        if words and not score:
+            continue
+        scored.append((score, product))
+    return [product for _, product in sorted(scored, key=lambda pair: -pair[0])]
 
 
 def get_product(product_id: str) -> Optional[dict]:

@@ -48,3 +48,9 @@ def test_goal_impact_days():
 
 def test_goal_impact_without_savings_rate():
     assert guard.goal_impact(30.0, {**SETTINGS, "monthly_savings": 0}) is None
+
+
+def test_search_matches_any_word_best_first():
+    results = catalog.search_products("unscented face moisturizer", max_price=25)
+    assert results[0]["id"] == "moist-01"
+    assert "moist-02" in [p["id"] for p in results]  # "face" still finds the scented one
