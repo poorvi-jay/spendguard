@@ -35,3 +35,14 @@ def test_bad_tool_calls_become_errors(monkeypatch):
 
     result = agent.chat([{"role": "user", "content": "buy stuff"}])
     assert [e["result"]["error"][:3] for e in result["events"]] == ["Unk", "Bad"]
+
+
+def test_new_request_after_purchase_is_pinned(monkeypatch):
+    core.start_session("Get me an unscented moisturiser under $25", replace=True)
+    core.end_session()  # what an approved purchase does
+    monkeypatch.setattr(agent, "_complete", lambda messages: {"role": "assistant", "content": "ok"})
+
+    agent.chat([{"role": "user", "content": "Get me an unscented moisturiser under $25"},
+                {"role": "assistant", "content": "Bought it."},
+                {"role": "user", "content": "Buy me the Studio Pro headphones"}])
+    assert core.get_active_session()["original_request"] == "Buy me the Studio Pro headphones"

@@ -134,3 +134,21 @@ def test_rules_rerun_at_confirm(paypal, intent):
     result = core.confirm_purchase(order_id)
     assert result["status"] == "blocked"
     assert paypal.actions()[-1] == "void"
+
+
+def test_accepting_spendguards_nudge_is_approved(paypal, intent):
+    intent.matches = False  # the intent check alone would reject earbuds for a headphones request
+    core.start_session("Buy me the Studio Pro noise-cancelling headphones")
+    assert core.checkout("head-02")["alternative"]["id"] == "head-01"
+
+    order_id = core.checkout("head-01")["order_id"]
+    result = core.confirm_purchase(order_id)
+    assert result["status"] == "approved"
+    assert "alternative" in result["reason"]
+
+
+def test_unsuggested_swap_still_needs_intent_match(paypal, intent):
+    intent.matches = False
+    core.start_session("Buy me the Studio Pro noise-cancelling headphones")
+    order_id = core.checkout("book-01")["order_id"]
+    assert core.confirm_purchase(order_id)["status"] == "blocked"

@@ -128,13 +128,18 @@ def get_product(product_id: str) -> Optional[dict]:
 
 
 def _log(
-    session_id: Optional[str], product: dict, decision: str, reason: str, order_id: Optional[str] = None
+    session_id: Optional[str],
+    product: dict,
+    decision: str,
+    reason: str,
+    order_id: Optional[str] = None,
+    alternative_id: Optional[str] = None,
 ) -> None:
     conn = get_connection()
     conn.execute(
-        "INSERT INTO audit_log (session_id, order_id, product_id, product_name, amount, decision, reason, created_at) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        (session_id, order_id, product["id"], product["name"], product["price"], decision, reason, _now()),
+        "INSERT INTO audit_log (session_id, order_id, product_id, product_name, amount, decision, reason, "
+        "alternative_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (session_id, order_id, product["id"], product["name"], product["price"], decision, reason, alternative_id, _now()),
     )
     conn.commit()
 
@@ -153,7 +158,8 @@ def checkout(product_id: str) -> dict:
     impact = guard.goal_impact(product["price"], settings)
 
     if rule_result.decision != "pass":
-        _log(session["id"], product, rule_result.decision, rule_result.reason)
+        alt_id = rule_result.alternative["id"] if rule_result.alternative else None
+        _log(session["id"], product, rule_result.decision, rule_result.reason, alternative_id=alt_id)
         return {
             "status": rule_result.decision,
             "reason": rule_result.reason,
@@ -183,7 +189,7 @@ def checkout(product_id: str) -> dict:
     }
 
 
-def _decide(product: dict, original_request: str) -> tuple[str, str]:
+def _decide(product: dict, session: dict) -> tuple[str, str]:
     """The guard's final call on an authorized order: (decision, reason)."""
     # Budget may have moved since checkout (another purchase captured in
     # between), so the rules run again before any money moves.
@@ -191,10 +197,19 @@ def _decide(product: dict, original_request: str) -> tuple[str, str]:
     if rule_result.decision != "pass":
         return "blocked", rule_result.reason
 
+    # SpendGuard itself suggested this product in place of one the user asked
+    # for, so the agent didn't pick it and the intent check would only reject the swap.
+    nudge = get_connection().execute(
+        "SELECT product_name FROM audit_log WHERE session_id = ? AND decision = 'nudge' AND alternative_id = ?",
+        (session["id"], product["id"]),
+    ).fetchone()
+    if nudge:
+        return "approved", f"SpendGuard's own cheaper alternative to {nudge['product_name']}."
+
     # Fail closed: if the intent check can't run, the money must not move,
     # and the authorization must not be left dangling either.
     try:
-        intent_result = guard.check_intent(product, original_request)
+        intent_result = guard.check_intent(product, session["original_request"])
     except Exception as e:
         return "blocked", f"Intent check failed, blocking by default: {e}"
 
@@ -246,7 +261,7 @@ def confirm_purchase(order_id: str) -> dict:
     )
     conn.commit()
 
-    decision, reason = _decide(product, session["original_request"])
+    decision, reason = _decide(product, session)
 
     if decision == "approved":
         paypal_client.capture_authorization(authorization_id)

@@ -36,5 +36,6 @@ CREATE TABLE IF NOT EXISTS audit_log (
     amount REAL,
     decision TEXT NOT NULL,
     reason TEXT NOT NULL,
+    alternative_id TEXT,
     created_at TEXT NOT NULL
 );

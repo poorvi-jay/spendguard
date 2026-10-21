@@ -13,6 +13,7 @@ _ADDED_COLUMNS = [
     ("settings", "monthly_savings", "REAL NOT NULL DEFAULT 300.0"),
     ("orders", "decision_reason", "TEXT"),
     ("audit_log", "order_id", "TEXT"),
+    ("audit_log", "alternative_id", "TEXT"),
 ]
 _initialized = False
 _init_lock = threading.Lock()
