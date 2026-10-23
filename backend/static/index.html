@@ -4,135 +4,346 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SpendGuard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f7f9; --panel: #ffffff; --text: #1b1f24; --muted: #5b6470; --line: #dde1e6;
-    --accent: #0b5cad; --ok: #1a7f37; --warn: #9a6700; --bad: #c62828; --chip: #eef1f4;
+    --bg: #f4f5ef; --grid: rgba(17, 19, 15, .05); --panel: #fbfbf7; --panel-2: #f0f1ea; --ink: #11130f; --muted: #5f6359; --line: #dfe1d6;
+    --lime: #d9f56b; --lime-ink: #11130f; --lime-soft: #eef9c8;
+    --ok: #2f7a1f; --ok-soft: #e4f3d6; --warn: #8a5a00; --warn-soft: #fbefcf; --bad: #b3261e; --bad-soft: #fbe3e0; --wait: #2459c4; --wait-soft: #e3ebfb;
+    --dark: #141611; --dark-2: #1d2019; --dark-line: #2c3026; --dark-text: #eef0e6; --dark-muted: #9ca191;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+    --shadow: 0 1px 0 rgba(17, 19, 15, .04), 0 18px 40px -18px rgba(17, 19, 15, .18);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #111418; --panel: #191d22; --text: #e6e9ec; --muted: #9aa4af; --line: #2c333b;
-      --accent: #5aa2ee; --ok: #4ac26b; --warn: #d4a72c; --bad: #ff6b6b; --chip: #232931;
+      --bg: #0f110d; --grid: rgba(238, 240, 230, .04); --panel: #171a14; --panel-2: #1e2219; --ink: #eef0e6; --muted: #a2a797; --line: #2b2f25;
+      --lime-soft: #2a3313; --ok: #8fd66f; --ok-soft: #1b2a14; --warn: #f0c35a; --warn-soft: #2e2611; --bad: #ff8a80; --bad-soft: #321a17; --wait: #8db2ff; --wait-soft: #172238;
+      --dark: #0a0b08; --dark-2: #141611; --dark-line: #262a20;
+      --shadow: 0 18px 40px -18px rgba(0, 0, 0, .6);
     }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
-  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--panel); }
-  header h1 { margin: 0; font-size: 18px; }
-  header .tag { color: var(--muted); font-size: 13px; }
-  #summary { margin-left: auto; display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
-  #summary b { color: var(--text); font-weight: 600; }
-  nav { display: flex; gap: 4px; padding: 10px 20px 0; max-width: 900px; margin: 0 auto; }
-  nav button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; font: inherit; color: var(--muted); cursor: pointer; }
-  nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
-  main { max-width: 900px; margin: 0 auto; padding: 16px 20px 40px; }
-  section[hidden] { display: none; }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
-  #messages { display: flex; flex-direction: column; gap: 10px; min-height: 260px; max-height: 60vh; overflow-y: auto; }
-  .msg { max-width: 85%; padding: 9px 13px; border-radius: 10px; white-space: pre-wrap; }
-  .msg.user { align-self: flex-end; background: var(--accent); color: #fff; }
-  .msg.assistant { align-self: flex-start; background: var(--chip); }
-  .event { align-self: flex-start; font-size: 13px; border-left: 3px solid var(--line); padding: 4px 10px; color: var(--muted); }
-  .event.approved, .event.pending_approval { border-color: var(--ok); }
-  .event.nudge { border-color: var(--warn); }
-  .event.blocked, .event.error { border-color: var(--bad); }
-  .event strong { color: var(--text); }
-  .empty { color: var(--muted); margin: auto; text-align: center; }
-  form.chat { display: flex; gap: 8px; margin-top: 12px; }
-  input, button.primary, button.secondary { font: inherit; border-radius: 8px; }
-  input { padding: 9px 11px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
-  button.primary, a.primary { background: var(--accent); color: #fff; border: 0; padding: 9px 16px; cursor: pointer; text-decoration: none; display: inline-block; border-radius: 8px; white-space: nowrap; }
-  button.secondary { background: none; border: 1px solid var(--line); color: var(--text); padding: 8px 14px; cursor: pointer; }
-  button:disabled { opacity: .6; cursor: wait; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .row p { margin: 0; color: var(--muted); font-size: 13px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-  label { display: block; font-size: 13px; color: var(--muted); }
-  label input { margin-top: 4px; }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { color: var(--muted); font-weight: 500; font-size: 13px; }
-  .badge { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--chip); }
-  .badge.approved { color: var(--ok); } .badge.nudge { color: var(--warn); } .badge.blocked { color: var(--bad); }
-  #login { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0; color: var(--ink); font: 16px/1.55 Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    background-color: var(--bg);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  .eyebrow { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; font: 500 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--ink); background: var(--lime); flex: none; }
+  .mono { font-family: var(--mono); font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 99px; padding: 11px 20px; font-weight: 700; font-size: 15px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+  .btn.dark { background: var(--ink); color: var(--bg); }
+  .btn.lime { background: var(--lime); color: var(--lime-ink); }
+  .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 600; padding: 8px 14px; font-size: 13.5px; }
+  .btn:hover { filter: brightness(1.06); }
+  .btn:disabled { opacity: .55; cursor: wait; }
+  .pill { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 99px; padding: 6px 10px; background: var(--panel); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+  .pill.live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #5bbf3a; box-shadow: 0 0 0 3px rgba(91, 191, 58, .2); }
+
+  /* ---- nav */
+  .topbar { display: flex; align-items: center; gap: 28px; padding: 20px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; text-decoration: none; color: var(--ink); }
+  .mark { width: 26px; height: 26px; border-radius: 8px; background: var(--ink); display: grid; place-items: center; }
+  .mark svg { color: var(--lime); }
+  .links { display: flex; gap: 26px; margin-left: auto; font-weight: 600; font-size: 15px; }
+  .links a { color: var(--ink); text-decoration: none; }
+  .links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 760px) { .links { display: none; } .topbar .btn { margin-left: auto; } }
+
+  /* ---- hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 48px; padding: 36px 0 72px; align-items: start; }
+  @media (max-width: 980px) { .hero { grid-template-columns: 1fr; gap: 32px; } }
+  .hero h1 { margin: 0 0 20px; font-size: clamp(38px, 5vw, 58px); line-height: 1.04; font-weight: 800; letter-spacing: -.035em; }
+  .hero .lede { margin: 0 0 26px; font-size: 17.5px; color: var(--muted); max-width: 520px; }
+  .hero .lede b { color: var(--ink); }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 26px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--muted); }
+  .facts li::before { content: "•"; margin-right: 8px; color: var(--ink); }
+
+  /* ---- demo card */
+  .demo-labels { display: flex; justify-content: space-between; margin: 0 6px 10px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+  .demo { display: flex; flex-direction: column; height: min(78vh, 720px); min-height: 520px; overflow: hidden; }
+  .demo-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
+  .demo-head h2 { margin: 6px 0 0; font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+  .pinned-bar { display: flex; align-items: baseline; gap: 10px; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--panel-2); font-size: 14px; }
+  .pinned-bar .mono { flex: none; }
+  #pinned { font-weight: 600; overflow-wrap: anywhere; }
+  #pinned.none { font-weight: 400; color: var(--muted); }
+
+  #messages { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .row { display: flex; gap: 10px; align-items: flex-end; max-width: 88%; }
+  .row.user { align-self: flex-end; flex-direction: row-reverse; }
+  .avatar { flex: none; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font: 600 10.5px var(--mono); }
+  .row.user .avatar { background: var(--lime); color: var(--lime-ink); }
+  .row.assistant .avatar { background: var(--ink); color: var(--bg); }
+  .bubble { padding: 11px 15px; border-radius: 16px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; }
+  .row.user .bubble { background: var(--ink); color: var(--bg); border-bottom-right-radius: 5px; }
+  .row.assistant .bubble { background: var(--panel-2); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+
+  .decision { margin-left: 40px; border-radius: 16px; padding: 14px 16px; border: 1px solid var(--line); background: var(--panel); }
+  .decision .top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .decision .verdict { font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 99px; }
+  .decision .who { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .decision p { margin: 10px 0 0; font-size: 14.5px; }
+  .decision .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
+  .tag { font: 500 11.5px var(--mono); padding: 5px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); }
+  .alt { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--warn-soft); font-size: 14px; }
+  .decision.approved { background: var(--lime-soft); border-color: transparent; } .decision.approved .verdict { background: var(--ink); color: var(--lime); }
+  .decision.pending_approval .verdict { background: var(--wait-soft); color: var(--wait); }
+  .decision.nudge .verdict { background: var(--warn-soft); color: var(--warn); }
+  .decision.blocked .verdict, .decision.error .verdict, .decision.cancelled .verdict { background: var(--bad-soft); color: var(--bad); }
+  .decision.blocked, .decision.error { border-color: color-mix(in srgb, var(--bad) 35%, var(--line)); }
+
+  .empty { margin: auto; max-width: 480px; text-align: center; padding: 8px; }
+  .empty h3 { margin: 0 0 6px; font-size: 20px; letter-spacing: -.01em; }
+  .empty p { margin: 0 0 18px; color: var(--muted); font-size: 14.5px; }
+  .chips { display: grid; gap: 8px; }
+  .chip { display: flex; justify-content: space-between; align-items: center; gap: 12px; border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 11px 14px; cursor: pointer; text-align: left; font-size: 14.5px; font-weight: 600; }
+  .chip span { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .chip:hover { border-color: var(--ink); }
+
+  .typing .bubble { display: flex; gap: 4px; padding: 15px; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite both; }
+  .typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .typing i { animation: none; opacity: .6; } }
+
+  form.composer { display: flex; gap: 8px; padding: 14px 18px; border-top: 1px solid var(--line); }
+  .input { width: 100%; padding: 12px 16px; border: 1px solid var(--line); border-radius: 99px; background: var(--bg); }
+  .input:focus { outline: none; border-color: var(--ink); }
+
+  /* ---- sections */
+  section.block { padding: 64px 0; border-top: 1px solid var(--line); }
+  section.block h2.title { margin: 0 0 28px; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.08; font-weight: 800; letter-spacing: -.03em; max-width: 640px; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+  .step { padding: 22px; }
+  .step .num { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 99px; padding: 4px 9px; }
+  .step h3 { margin: 14px 0 6px; font-size: 18px; }
+  .step p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* rules */
+  .rules { display: grid; grid-template-columns: 340px 1fr; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .rules { grid-template-columns: 1fr; } }
+  .scorecard { background: var(--dark); color: var(--dark-text); border-radius: 22px; padding: 22px; box-shadow: var(--shadow); display: grid; gap: 22px; }
+  .scorecard .head { display: flex; justify-content: space-between; align-items: center; }
+  .scorecard .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+  .scorecard .brand::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lime); }
+  .scorecard .mono { color: var(--dark-muted); }
+  .big { font-size: 44px; font-weight: 800; letter-spacing: -.03em; line-height: 1; color: var(--lime); margin-top: 6px; }
+  .big small { font-size: 16px; color: var(--dark-muted); font-weight: 600; letter-spacing: 0; }
+  .meter { height: 8px; border-radius: 99px; background: var(--dark-2); border: 1px solid var(--dark-line); overflow: hidden; margin-top: 12px; }
+  .meter span { display: block; height: 100%; background: var(--lime); border-radius: 99px; transition: width .4s ease; }
+  .meter.hot span { background: #ff8a80; }
+  .scorecard .sub { margin-top: 8px; font-size: 13.5px; color: var(--dark-muted); }
+  .settings { padding: 24px; display: grid; gap: 22px; }
+  .settings h3 { margin: 0 0 12px; font-size: 16px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  label { display: grid; gap: 6px; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  label .input { font: 500 15px Manrope, system-ui, sans-serif; letter-spacing: 0; text-transform: none; color: var(--ink); border-radius: 12px; }
+  .save { display: flex; align-items: center; gap: 14px; }
+  .status { margin: 0; font-size: 14px; color: var(--muted); min-height: 1.4em; }
+
+  /* ledger */
+  .ledger-head { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  .filter { border: 1px solid var(--line); background: var(--panel); border-radius: 99px; padding: 7px 14px; cursor: pointer; font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+  .filter[aria-pressed="true"] { background: var(--ink); color: var(--lime); border-color: var(--ink); }
+  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .total { padding: 16px 18px; }
+  .total .value { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-top: 6px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 13px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 500 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  tr:last-child td { border-bottom: 0; }
+  td.when { font: 400 12.5px var(--mono); color: var(--muted); white-space: nowrap; }
+  td.amount { font-family: var(--mono); white-space: nowrap; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 99px; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .badge.approved { background: var(--ink); color: var(--lime); }
+  .badge.nudge { background: var(--warn-soft); color: var(--warn); }
+  .badge.blocked { background: var(--bad-soft); color: var(--bad); }
+
+  footer { padding: 28px 0 48px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--ink); }
+
+  /* login */
+  #login { position: fixed; inset: 0; background: rgba(17, 19, 15, .5); backdrop-filter: blur(4px); display: grid; place-items: center; padding: 16px; z-index: 10; }
   #login[hidden] { display: none; }
-  #login form { max-width: 340px; width: 100%; }
-  #login h2 { margin: 0 0 6px; font-size: 17px; }
-  #login p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
-  .status { font-size: 13px; color: var(--muted); min-height: 1.5em; margin-top: 8px; }
+  #login form { width: 100%; max-width: 380px; padding: 28px; display: grid; gap: 14px; }
+  #login h2 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+  #login p { margin: 0; color: var(--muted); font-size: 14.5px; }
 </style>
 </head>
 <body>
-<header>
-  <h1>SpendGuard</h1>
-  <span class="tag">Guardrails for AI agents that spend money</span>
-  <div id="summary" aria-live="polite"></div>
-</header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="shield" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6Z"/></symbol>
+</svg>
 
-<nav role="tablist">
-  <button role="tab" aria-selected="true" data-tab="chat">Shop</button>
-  <button role="tab" aria-selected="false" data-tab="settings">Settings</button>
-  <button role="tab" aria-selected="false" data-tab="audit">Audit log</button>
-</nav>
+<div class="wrap">
+  <div class="topbar">
+    <a class="logo" href="#top"><span class="mark"><svg width="15" height="15"><use href="#shield"/></svg></span>SpendGuard</a>
+    <nav class="links" aria-label="Sections">
+      <a href="#demo">Demo</a><a href="#how">How it works</a><a href="#rules">Your rules</a><a href="#ledger">Ledger</a>
+    </nav>
+    <a class="btn dark" href="#demo">Try it ↓</a>
+  </div>
 
-<main>
-  <section id="tab-chat">
-    <div class="panel">
-      <div class="row">
-        <p>Your first message, or your first after a completed purchase, is pinned as the request every purchase is checked against.</p>
-        <button class="secondary" id="new-request" type="button">New request</button>
+  <main id="top">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Guardrails for AI agents</p>
+        <h1>Let agents shop. Without an unchecked wallet.</h1>
+        <p class="lede"><b>The problem:</b> an AI agent connected to a payment tool can spend whatever it decides to. It can misread a request, ignore a budget, or be tricked by a product page. <b>SpendGuard</b> sits between the agent and your money: every PayPal payment is checked against your budget, your rules and what you actually asked for, before any money moves.</p>
+        <a class="btn lime" href="#how">How it works ↗</a>
+        <ul class="facts">
+          <li>Any MCP agent, or the one here</li>
+          <li>PayPal authorize, then capture or void</li>
+          <li>PayPal sandbox, live</li>
+        </ul>
       </div>
-      <div id="messages" aria-live="polite"></div>
-      <form class="chat" id="chat-form">
-        <input id="chat-input" aria-label="Message to the shopping agent" autocomplete="off" placeholder="e.g. Get me an unscented moisturiser under $25" required>
-        <button class="primary" type="submit">Send</button>
-      </form>
-    </div>
-  </section>
 
-  <section id="tab-settings" hidden>
-    <form class="panel" id="settings-form">
-      <div class="grid">
-        <label>Monthly budget ($)<input name="monthly_budget" type="number" step="0.01" min="0"></label>
-        <label>Per-purchase cap ($)<input name="per_purchase_cap" type="number" step="0.01" min="0"></label>
-        <label>Blocked categories (comma-separated)<input name="blocked_categories"></label>
-        <label>Savings goal<input name="savings_goal_name"></label>
-        <label>Goal target ($)<input name="savings_goal_target" type="number" step="0.01" min="0"></label>
-        <label>Saved so far ($)<input name="savings_goal_saved" type="number" step="0.01" min="0"></label>
-        <label>Saving per month ($)<input name="monthly_savings" type="number" step="0.01" min="0"></label>
+      <div id="demo">
+        <div class="demo-labels"><span class="mono">Live demo</span><span class="mono">PayPal sandbox</span></div>
+        <div class="card demo">
+          <div class="demo-head">
+            <div>
+              <span class="mono">Agent / 001</span>
+              <h2>What should your agent buy?</h2>
+            </div>
+            <button class="btn ghost" id="new-request" type="button">New request</button>
+          </div>
+          <div class="pinned-bar"><span class="mono">Pinned</span><span id="pinned" class="none" aria-live="polite">Your next message becomes the request every purchase is checked against.</span></div>
+          <div id="messages" aria-live="polite"></div>
+          <form class="composer" id="chat-form">
+            <input class="input" id="chat-input" aria-label="Message to the shopping agent" autocomplete="off" placeholder="e.g. Get me an unscented moisturiser under $25" required>
+            <button class="btn dark" type="submit">Send</button>
+          </form>
+        </div>
       </div>
-      <p class="status" id="settings-status" aria-live="polite"></p>
-      <button class="primary" type="submit">Save settings</button>
-    </form>
-  </section>
-
-  <section id="tab-audit" hidden>
-    <div class="panel">
-      <table>
-        <thead><tr><th>When</th><th>Product</th><th>Amount</th><th>Decision</th><th>Reason</th></tr></thead>
-        <tbody id="audit-body"></tbody>
-      </table>
     </div>
-  </section>
-</main>
+
+    <section class="block" id="how">
+      <p class="eyebrow">How it works</p>
+      <h2 class="title">The agent shops. SpendGuard decides whether money moves.</h2>
+      <div class="steps">
+        <div class="card step"><span class="num">01</span><h3>Your request is pinned</h3><p>What you asked for is stored on the server before shopping starts. The agent can't rewrite it later, even if a product page tells it to.</p></div>
+        <div class="card step"><span class="num">02</span><h3>Rules run first</h3><p>Monthly budget, per-purchase cap and blocked categories run at checkout. Over the cap? SpendGuard nudges to a cheaper option instead.</p></div>
+        <div class="card step"><span class="num">03</span><h3>PayPal holds, then SpendGuard decides</h3><p>You approve in PayPal, which only authorizes. An AI check compares the item to your request, then SpendGuard captures or voids.</p></div>
+      </div>
+    </section>
+
+    <section class="block" id="rules">
+      <p class="eyebrow">Your rules</p>
+      <h2 class="title">Budget, limits and the goal every purchase is weighed against.</h2>
+      <div class="rules">
+        <div class="scorecard">
+          <div class="head"><span class="brand">SpendGuard</span><span class="mono">This month</span></div>
+          <div>
+            <span class="mono">Spent</span>
+            <div class="big" id="spent">–</div>
+            <div class="meter" id="budget-meter"><span style="width:0"></span></div>
+            <div class="sub" id="budget-sub"></div>
+          </div>
+          <div>
+            <span class="mono" id="goal-name">Savings goal</span>
+            <div class="big" id="goal">–</div>
+            <div class="meter" id="goal-meter"><span style="width:0"></span></div>
+            <div class="sub" id="goal-sub"></div>
+          </div>
+        </div>
+
+        <form class="card settings" id="settings-form">
+          <div>
+            <h3>Spending rules</h3>
+            <div class="fields">
+              <label>Monthly budget ($)<input class="input" name="monthly_budget" type="number" step="0.01" min="0"></label>
+              <label>Per-purchase cap ($)<input class="input" name="per_purchase_cap" type="number" step="0.01" min="0"></label>
+              <label>Blocked categories<input class="input" name="blocked_categories" placeholder="alcohol, gift-cards"></label>
+            </div>
+          </div>
+          <div>
+            <h3>Savings goal</h3>
+            <div class="fields">
+              <label>Goal name<input class="input" name="savings_goal_name"></label>
+              <label>Target ($)<input class="input" name="savings_goal_target" type="number" step="0.01" min="0"></label>
+              <label>Saved so far ($)<input class="input" name="savings_goal_saved" type="number" step="0.01" min="0"></label>
+              <label>Saving per month ($)<input class="input" name="monthly_savings" type="number" step="0.01" min="0"></label>
+            </div>
+          </div>
+          <div class="save">
+            <button class="btn dark" type="submit">Save rules</button>
+            <p class="status" id="settings-status" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="block" id="ledger">
+      <p class="eyebrow">Ledger</p>
+      <h2 class="title">Every decision, on the record.</h2>
+      <div class="totals" id="totals"></div>
+      <div class="ledger-head" role="group" aria-label="Filter decisions">
+        <button class="filter" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter" type="button" data-filter="approved" aria-pressed="false">Approved</button>
+        <button class="filter" type="button" data-filter="nudge" aria-pressed="false">Nudged</button>
+        <button class="filter" type="button" data-filter="blocked" aria-pressed="false">Blocked</button>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th>When</th><th>Product</th><th>Amount</th><th>Decision</th><th>Reason</th></tr></thead>
+          <tbody id="audit-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>SpendGuard · built for the PayPal AI Hackathon · sandbox payments only</span>
+    <a href="https://github.com/poorvi-jay/spendguard">Source on GitHub</a>
+  </footer>
+</div>
 
 <div id="login" hidden>
-  <form class="panel" id="login-form">
+  <form class="card" id="login-form">
+    <span class="mark"><svg width="15" height="15"><use href="#shield"/></svg></span>
     <h2>Enter the SpendGuard password</h2>
     <p>It's set as APP_PASSWORD on the server.</p>
-    <label>Password<input id="login-password" type="password" required autocomplete="current-password"></label>
+    <label>Password<input class="input" id="login-password" type="password" required autocomplete="current-password"></label>
     <p class="status" id="login-status" aria-live="polite"></p>
-    <button class="primary" type="submit">Continue</button>
+    <button class="btn dark" type="submit">Continue</button>
   </form>
 </div>
 
 <script>
 const $ = (id) => document.getElementById(id);
+const el = (tag, className, text) => { const n = document.createElement(tag); if (className) n.className = className; if (text != null) n.textContent = text; return n; };
 const store = (area, key, value) => { try { return value === undefined ? area.getItem(key) : area.setItem(key, value); } catch { return null; } };
+const money = (n) => `$${Number(n).toFixed(2)}`;
+
 let password = store(localStorage, "sg_password") || "";
 let messages = JSON.parse(store(sessionStorage, "sg_chat") || "[]");  // survives the trip to PayPal and back
+let auditRows = [];
+let auditFilter = "all";
 const saveChat = () => store(sessionStorage, "sg_chat", JSON.stringify(messages));
+
+const EXAMPLES = [
+  ["Get me an unscented moisturiser under $25", "Approve"],
+  ["Buy me the Studio Pro noise-cancelling headphones", "Nudge"],
+  ["Grab a bottle of cabernet for dinner", "Block"],
+  ["Buy the ceramic pour-over coffee set", "Rules"],
+];
 
 async function api(path, options = {}) {
   const res = await fetch(path, { ...options, headers: { "Content-Type": "application/json", Authorization: `Bearer ${password}` } });
@@ -142,7 +353,7 @@ async function api(path, options = {}) {
 }
 
 function showLogin(text = "") { $("login-status").textContent = text; $("login").hidden = false; $("login-password").focus(); }
-$("login-form").addEventListener("submit", async (e) => {
+$("login-form").addEventListener("submit", (e) => {
   e.preventDefault();
   password = $("login-password").value;
   store(localStorage, "sg_password", password);
@@ -150,70 +361,83 @@ $("login-form").addEventListener("submit", async (e) => {
   refresh();
 });
 
-// ---- tabs
-document.querySelectorAll("nav button").forEach((tab) => tab.addEventListener("click", () => {
-  document.querySelectorAll("nav button").forEach((t) => t.setAttribute("aria-selected", t === tab));
-  document.querySelectorAll("main section").forEach((s) => (s.hidden = s.id !== `tab-${tab.dataset.tab}`));
-  if (tab.dataset.tab === "audit") loadAudit();
-  if (tab.dataset.tab === "settings") loadSettings();
-}));
-
 // ---- chat
-const money = (n) => `$${Number(n).toFixed(2)}`;
+const VERDICTS = {
+  pending_approval: "Awaiting PayPal approval",
+  approved: "Approved · captured",
+  nudge: "Nudged",
+  blocked: "Blocked · no money moved",
+  cancelled: "Cancelled",
+  error: "Error",
+};
 
-function eventText(ev) {
-  const r = ev.result || {};
-  if (ev.tool !== "checkout" && ev.tool !== "confirm_purchase") return null;
-  const parts = [];
-  if (r.status === "pending_approval") parts.push("Rules passed. Waiting for your approval in PayPal.");
-  else if (r.status === "approved") parts.push(`Approved: ${r.reason}`);
-  else parts.push(`${r.status}: ${r.reason || ""}`);
-  if (r.alternative) parts.push(`Suggested instead: ${r.alternative.name} (${money(r.alternative.price)}).`);
-  if (r.goal_impact) parts.push(r.goal_impact.message);
-  return { status: r.status, text: parts.join(" "), approvalUrl: r.approval_url };
+function decisionCard(r) {
+  const card = el("div", `decision ${r.status}`);
+  const top = el("div", "top");
+  top.append(el("span", "verdict", VERDICTS[r.status] || r.status), el("span", "who", "SpendGuard"));
+  card.append(top);
+  if (r.status === "pending_approval") card.append(el("p", null, "Budget and category rules passed. Approve in PayPal, then SpendGuard runs the final check."));
+  else if (r.reason) card.append(el("p", null, r.reason));
+  if (r.alternative) {
+    const alt = el("div", "alt");
+    alt.append(el("span", null, `Suggested instead: ${r.alternative.name}`), el("b", null, money(r.alternative.price)));
+    card.append(alt);
+  }
+  const tags = el("div", "tags");
+  if (r.goal_impact) tags.append(el("span", "tag", `Goal −${r.goal_impact.days_delayed} days`));
+  if (r.approval_url) {
+    const a = el("a", "btn dark", "Approve in PayPal ↗");
+    a.href = r.approval_url;
+    tags.append(a);
+  }
+  if (tags.children.length) card.append(tags);
+  return card;
 }
 
-function renderChat() {
+function bubble(role, text) {
+  const row = el("div", `row ${role}`);
+  row.append(el("div", "avatar", role === "user" ? "YOU" : "AI"), el("div", "bubble", text));
+  return row;
+}
+
+function renderChat(typing = false) {
   const box = $("messages");
   box.replaceChildren();
   if (!messages.length) {
-    const p = document.createElement("p");
-    p.className = "empty";
-    p.textContent = "Tell the agent what to buy. SpendGuard checks every purchase before money moves.";
-    box.append(p);
+    const empty = el("div", "empty");
+    empty.append(el("h3", null, "Pick a request, or type your own"),
+      el("p", null, "Each one shows a different SpendGuard decision."));
+    const chips = el("div", "chips");
+    for (const [text, kind] of EXAMPLES) {
+      const chip = el("button", "chip");
+      chip.type = "button";
+      chip.append(text, el("span", null, kind));
+      chip.addEventListener("click", () => send(text));
+      chips.append(chip);
+    }
+    empty.append(chips);
+    box.append(empty);
   }
   for (const m of messages) {
     for (const ev of m.events || []) {
-      const info = eventText(ev);
-      if (!info) continue;
-      const div = document.createElement("div");
-      div.className = `event ${info.status}`;
-      const label = document.createElement("strong");
-      label.textContent = "SpendGuard  ";
-      div.append(label, info.text);
-      if (info.approvalUrl) {
-        const a = document.createElement("a");
-        a.className = "primary"; a.href = info.approvalUrl; a.textContent = "Approve in PayPal";
-        a.style.marginLeft = "10px";
-        div.append(a);
-      }
-      box.append(div);
+      if (ev.tool === "checkout" || ev.tool === "confirm_purchase") box.append(decisionCard(ev.result || {}));
     }
-    const div = document.createElement("div");
-    div.className = `msg ${m.role}`;
-    div.textContent = m.content;
-    box.append(div);
+    box.append(m.decision ? decisionCard(m.decision) : bubble(m.role, m.content));
+  }
+  if (typing) {
+    const row = bubble("assistant", "");
+    row.classList.add("typing");
+    row.querySelector(".bubble").append(el("i"), el("i"), el("i"));
+    row.setAttribute("aria-label", "The agent is working");
+    box.append(row);
   }
   box.scrollTop = box.scrollHeight;
 }
 
-$("chat-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const input = $("chat-input");
-  const button = e.submitter;
-  messages.push({ role: "user", content: input.value.trim() });
-  input.value = "";
-  saveChat(); renderChat();
+async function send(text) {
+  const button = $("chat-form").querySelector("button");
+  messages.push({ role: "user", content: text });
+  saveChat(); renderChat(true);
   button.disabled = true;
   try {
     const plain = messages.map(({ role, content }) => ({ role, content }));
@@ -223,28 +447,58 @@ $("chat-form").addEventListener("submit", async (e) => {
     if (err.message !== "unauthorized") messages.push({ role: "assistant", content: `Something went wrong: ${err.message}` });
   }
   button.disabled = false;
-  saveChat(); renderChat(); loadSummary();
+  saveChat(); renderChat(); loadStats(); loadAudit();
+}
+
+$("chat-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = $("chat-input");
+  const text = input.value.trim();
+  input.value = "";
+  if (text) send(text);
 });
 
 $("new-request").addEventListener("click", async () => {
   messages = []; saveChat(); renderChat();
   try { await api("/session", { method: "DELETE" }); } catch {}
+  loadStats();
   $("chat-input").focus();
 });
 
 // Back from PayPal: /checkout/return already ran the guard and sent us here with its decision.
 const params = new URLSearchParams(location.search);
 if (params.get("status")) {
-  const status = params.get("status");
-  const text = status === "approved"
-    ? `SpendGuard approved the purchase and PayPal captured the payment. ${params.get("reason")}`
-    : `SpendGuard ${status === "cancelled" ? "saw you cancel" : `${status} the purchase`}: ${params.get("reason")} No money moved.`;
-  messages.push({ role: "assistant", content: text, events: [] });
+  const decision = { status: params.get("status"), reason: params.get("reason") };
+  const summary = decision.status === "approved"
+    ? `SpendGuard approved the purchase and PayPal captured the payment. ${decision.reason}`
+    : `SpendGuard ${decision.status === "cancelled" ? "saw you cancel" : `${decision.status} the purchase`}: ${decision.reason} No money moved.`;
+  messages.push({ role: "assistant", content: summary, decision });  // content is what the agent sees next turn
   saveChat();
-  history.replaceState(null, "", "/");
+  history.replaceState(null, "", "/#demo");
 }
 
-// ---- settings, summary, audit
+// ---- stats
+function setMeter(id, ratio) {
+  const meter = $(id);
+  meter.querySelector("span").style.width = `${Math.min(Math.max(ratio, 0), 1) * 100}%`;
+  meter.classList.toggle("hot", id === "budget-meter" && ratio > 0.85);
+}
+
+async function loadStats() {
+  const [s, session] = await Promise.all([api("/summary"), api("/session")]);
+  $("spent").replaceChildren(money(s.spent_this_month), el("small", null, ` / ${money(s.monthly_budget)}`));
+  $("budget-sub").textContent = `${money(s.remaining_budget)} left this month`;
+  setMeter("budget-meter", s.spent_this_month / s.monthly_budget);
+  $("goal-name").textContent = s.savings_goal_name;
+  $("goal").replaceChildren(money(s.savings_goal_saved), el("small", null, ` / ${money(s.savings_goal_target)}`));
+  $("goal-sub").textContent = `Saving ${money(s.monthly_savings)} a month`;
+  setMeter("goal-meter", s.savings_goal_saved / s.savings_goal_target);
+  const pinned = $("pinned");
+  pinned.textContent = session ? `“${session.original_request}”` : "Your next message becomes the request every purchase is checked against.";
+  pinned.classList.toggle("none", !session);
+}
+
+// ---- settings
 async function loadSettings() {
   const s = await api("/settings");
   for (const input of $("settings-form").elements) {
@@ -262,45 +516,53 @@ $("settings-form").addEventListener("submit", async (e) => {
       ? input.value.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean)
       : input.type === "number" ? Number(input.value) : input.value;
   }
-  try { await api("/settings", { method: "PUT", body: JSON.stringify(body) }); $("settings-status").textContent = "Saved."; loadSummary(); }
+  try { await api("/settings", { method: "PUT", body: JSON.stringify(body) }); $("settings-status").textContent = "Saved."; loadStats(); }
   catch (err) { $("settings-status").textContent = `Couldn't save: ${err.message}`; }
 });
 
-async function loadSummary() {
-  const s = await api("/summary");
-  const box = $("summary");
-  box.replaceChildren();
-  for (const [label, value] of [["Spent", `${money(s.spent_this_month)} of ${money(s.monthly_budget)}`],
-                                 [s.savings_goal_name, `${money(s.savings_goal_saved)} of ${money(s.savings_goal_target)}`]]) {
-    const span = document.createElement("span");
-    const b = document.createElement("b");
-    b.textContent = value;
-    span.append(`${label}: `, b);
-    box.append(span);
-  }
-}
+// ---- ledger
+document.querySelectorAll(".filter").forEach((button) => button.addEventListener("click", () => {
+  auditFilter = button.dataset.filter;
+  document.querySelectorAll(".filter").forEach((b) => b.setAttribute("aria-pressed", b === button));
+  renderAudit();
+}));
 
 async function loadAudit() {
-  const rows = await api("/audit-log");
+  auditRows = await api("/audit-log");
+  const count = (d) => auditRows.filter((r) => r.decision === d).length;
+  const stopped = auditRows.filter((r) => r.decision !== "approved").reduce((sum, r) => sum + r.amount, 0);
+  const totals = $("totals");
+  totals.replaceChildren();
+  for (const [label, value] of [["Approved", count("approved")], ["Nudged", count("nudge")], ["Blocked", count("blocked")], ["Spending stopped", money(stopped)]]) {
+    const card = el("div", "card total");
+    card.append(el("span", "mono", label), el("div", "value", value));
+    totals.append(card);
+  }
+  renderAudit();
+}
+
+function renderAudit() {
+  const rows = auditRows.filter((r) => auditFilter === "all" || r.decision === auditFilter);
   const body = $("audit-body");
   body.replaceChildren();
   if (!rows.length) {
-    const tr = body.insertRow(); const td = tr.insertCell();
-    td.colSpan = 5; td.textContent = "No decisions yet."; td.style.color = "var(--muted)";
+    const td = body.insertRow().insertCell();
+    td.colSpan = 5; td.textContent = "No decisions yet. Try a request in the demo above."; td.style.color = "var(--muted)";
   }
   for (const r of rows) {
     const tr = body.insertRow();
-    tr.insertCell().textContent = new Date(r.created_at).toLocaleString();
+    const when = tr.insertCell(); when.className = "when"; when.textContent = new Date(r.created_at).toLocaleString();
     tr.insertCell().textContent = r.product_name;
-    tr.insertCell().textContent = money(r.amount);
-    const badge = document.createElement("span");
-    badge.className = `badge ${r.decision}`; badge.textContent = r.decision;
-    tr.insertCell().append(badge);
+    const amount = tr.insertCell(); amount.className = "amount"; amount.textContent = money(r.amount);
+    tr.insertCell().append(el("span", `badge ${r.decision}`, r.decision));
     tr.insertCell().textContent = r.reason;
   }
 }
 
-function refresh() { renderChat(); loadSummary().catch(() => {}); }
+function refresh() {
+  renderChat();
+  Promise.all([loadStats(), loadSettings(), loadAudit()]).catch(() => {});
+}
 refresh();
 </script>
 </body>
