@@ -97,7 +97,8 @@ class ChatBody(BaseModel):
 
 @app.get("/")
 def index():
-    return FileResponse(BACKEND_DIR / "static" / "index.html")
+    # no-cache: browsers revalidate, so a deploy shows up on the next load instead of a stale page.
+    return FileResponse(BACKEND_DIR / "static" / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.post("/chat")
