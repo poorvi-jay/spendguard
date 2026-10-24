@@ -16,7 +16,7 @@ SpendGuard sits between the agent and PayPal. The agent can still search, compar
 
 - **Rules check** — monthly budget, per-purchase cap, blocked categories
 - **Goal impact** — how much this purchase delays the user's savings goal
-- **Intent match** — an LLM compares the item against what the user originally asked for, catching both agent mistakes and prompt-injection tricks
+- **Intent match** — an LLM compares the item against what the user originally asked for, catching both agent mistakes and prompt-injection tricks. On a 21-scenario test set, including a product whose listing tries to talk agents into buying it, the guard reaches the right decision 21/21 times across 5 runs each ([details](backend/README.md#guard-accuracy-eval)).
 
 PayPal is the enforcement point: checkout creates an order with authorize-then-capture. The user approves in PayPal, the guard makes its final decision, and SpendGuard either captures the payment (approve) or voids it (nudge/block). The agent never has direct control over capture.
 

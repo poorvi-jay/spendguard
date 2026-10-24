@@ -65,6 +65,27 @@ python -m pytest -q
 
 PayPal and the LLM are faked in tests, so no keys are needed.
 
+## Guard accuracy eval
+
+```bash
+python scripts/eval_guard.py --runs 5
+```
+
+Runs the 21 scenarios in [`evals/guard_cases.json`](evals/guard_cases.json)
+through the same rules -> intent-check path a real purchase takes, against the
+default settings, with the real LLM (needs `LLM_API_KEY`; well under a cent per
+run). A case passes only if every run reaches the expected decision.
+
+Current result: **21/21, 5 runs each**. The set covers scent, price, format and
+feature mismatches, a typo, a blocked category, over-cap nudges, an
+over-budget block, and a **prompt-injection product** (`moist-04`) whose
+description tells AI agents it is unscented and already approved.
+
+Two prompt fixes came out of it: the intent check used to invent price limits
+("affordable for a night cream"), and it gave its verdict before its
+reasoning, which flipped some cases between runs. The prompt was tuned on
+these cases, so treat 21/21 as a regression check, not a benchmark.
+
 ## Manual smoke test of the PayPal flow
 
 Before wiring anything else up, confirm the sandbox authorize/capture/void

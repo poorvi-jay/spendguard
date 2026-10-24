@@ -54,3 +54,14 @@ def test_search_matches_any_word_best_first():
     results = catalog.search_products("unscented face moisturizer", max_price=25)
     assert results[0]["id"] == "moist-01"
     assert "moist-02" in [p["id"] for p in results]  # "face" still finds the scented one
+
+
+def test_eval_cases_are_valid():
+    import json
+    from pathlib import Path
+
+    cases = json.loads((Path(__file__).resolve().parent.parent / "evals" / "guard_cases.json").read_text(encoding="utf-8"))
+    assert len({c["id"] for c in cases}) == len(cases)
+    for case in cases:
+        assert catalog.get_product(case["product_id"]), case["id"]
+        assert case["expected"] in {"approved", "nudge", "blocked"}, case["id"]
