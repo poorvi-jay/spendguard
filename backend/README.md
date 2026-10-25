@@ -57,6 +57,10 @@ To point Claude Desktop at it, add to `claude_desktop_config.json`:
 }
 ```
 
+On Windows the paths look like `C:\\path\\to\\backend\\.venv\\Scripts\\python.exe`
+and `C:\\path\\to\\backend\\run_mcp.py` (JSON needs the doubled backslashes).
+Fully quit Claude Desktop from the system tray and reopen it to load the server.
+
 ## Tests
 
 ```bash
