@@ -1,0 +1,33 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef; color: #11130f; font-family: "Manrope", sans-serif;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    #s7-eyebrow { position: absolute; left: 160px; top: 300px; display: flex; align-items: center; gap: 14px; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .14em; color: #5f6359; }
+    #s7-eyebrow::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #11130f; background: #d9f56b; }
+    #s7-title { position: absolute; left: 160px; top: 360px; font: 800 120px/1.04 "Manrope", sans-serif; letter-spacing: -.04em; }
+    #s7-title span { display: block; opacity: 0; }
+    #s7-rec { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; object-fit: cover; box-shadow: 0 30px 60px -30px rgba(17,19,15,.45); }
+    #s7-tag { position: absolute; left: 178px; top: 14px; padding: 14px 22px; border-radius: 99px; background: #11130f; color: #d9f56b; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .1em; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="setup" data-width="1920" data-height="1080">
+    <div id="s7-eyebrow">WHY IT MATTERS</div>
+    <div id="s7-title"><span id="s7-t1">Agents shop for people now</span><span id="s7-t2">and read every page on the way</span></div>
+    <video id="s7-rec" class="clip" src="assets/clips/settings.mp4" muted playsinline
+      data-start="4.6" data-duration="10.9" data-media-start="0.2" data-track-index="1"></video>
+    <div id="s7-tag">LIVE APP · YOUR RULES</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s7-eyebrow", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0.1);
+    tl.fromTo("#s7-t1", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.2);
+    tl.fromTo("#s7-t2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 1.4);
+    tl.to(["#s7-eyebrow", "#s7-t1", "#s7-t2"], { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 4.35);
+    tl.fromTo("#s7-tag", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 5.0);
+    window.__timelines["setup"] = tl;
+  </script>
+</template>

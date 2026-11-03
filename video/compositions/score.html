@@ -1,0 +1,38 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-600.woff2") format("woff2"); font-weight: 600; }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Manrope", sans-serif; color: #11130f; }
+    #s5-ground { position: absolute; inset: 0; background-color: #d9f56b; }
+    #s5-wrap { position: absolute; inset: 0; }
+    #s5-num { position: absolute; left: 150px; top: 150px; font: 800 400px/1 "Manrope", sans-serif; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+    #s5-line { position: absolute; left: 160px; top: 600px; font: 700 56px/1.15 "Manrope", sans-serif; letter-spacing: -.02em; width: 1500px; opacity: 0; }
+    #s5-term { position: absolute; left: 160px; top: 760px; padding: 28px 34px; border-radius: 24px; background: #11130f; color: #c9cdbf; font: 500 30px/1.6 "IBM Plex Mono", monospace; opacity: 0; }
+    #s5-term b { color: #d9f56b; font-weight: 500; }
+  </style>
+  <div data-hf-id="hf-vavz" id="root" data-composition-id="score" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-qbwv" id="s5-ground"></div>
+    <div data-hf-id="hf-ilhm" id="s5-wrap">
+      <div data-hf-id="hf-lz6m" id="s5-num"><span data-hf-id="hf-26p0" id="s5-count">0</span>/21</div>
+      <div data-hf-id="hf-kw96" id="s5-line">21 of 21 guard tests, including the poisoned listing</div>
+      <div data-hf-id="hf-nfw8" id="s5-term"><b data-hf-id="hf-om0n">21/21 cases correct (100%), 5 runs each</b></div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const counter = { v: 0 };
+    // The count is a function of timeline time, so any frame renders on its own.
+    tl.fromTo(counter, { v: 0 }, {
+      v: 21, duration: 0.9, ease: "power3.out",
+      onUpdate: () => { document.getElementById("s5-count").textContent = Math.round(counter.v); },
+    }, 0.1);
+    tl.fromTo("#s5-num", { scale: 0.92, opacity: 0, filter: "blur(10px)", transformOrigin: "0% 50%" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.9, ease: "power3.out" }, 0);
+    tl.fromTo("#s5-line", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 1.0);
+    tl.fromTo("#s5-term", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 1.4);
+    // Colour flood back to the product's ground for the end card.
+    tl.to("#s5-wrap", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 4.45);
+    tl.fromTo("#s5-ground", { backgroundColor: "#d9f56b" }, { backgroundColor: "#f4f5ef", duration: 0.35, ease: "power2.inOut" }, 4.55);
+    window.__timelines["score"] = tl;
+  </script>
+</template>

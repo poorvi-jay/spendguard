@@ -1,0 +1,80 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-600.woff2") format("woff2"); font-weight: 600; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px; font-family: "Manrope", sans-serif; color: #11130f;
+    }
+    .mono { font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: #5f6359; }
+    #s2-card {
+      position: absolute; left: 220px; top: 70px; width: 1480px; height: 940px;
+      background: #fbfbf7; border: 2px solid #dfe1d6; border-radius: 36px;
+      box-shadow: 0 30px 60px -30px rgba(17,19,15,.35); overflow: hidden;
+    }
+    #s2-card > * { position: absolute; }
+    #s2-label { left: 56px; top: 40px; }
+    #s2-h { left: 56px; top: 78px; font-weight: 700; font-size: 52px; letter-spacing: -.02em; }
+    #s2-pin { left: 0; right: 0; top: 168px; height: 86px; background: #f0f1ea; border-top: 2px solid #dfe1d6; border-bottom: 2px solid #dfe1d6; display: flex; align-items: center; gap: 24px; padding: 0 56px; }
+    #s2-pin b { font-weight: 600; font-size: 34px; }
+    #s2-user { right: 56px; top: 296px; display: flex; gap: 16px; align-items: flex-end; flex-direction: row-reverse; }
+    #s2-agentrow { left: 56px; top: 404px; display: flex; gap: 16px; align-items: flex-end; }
+    .avatar { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; font: 600 22px "IBM Plex Mono", monospace; flex: none; }
+    .bubble { padding: 18px 28px; border-radius: 28px; font-weight: 500; font-size: 34px; }
+    #s2-user .avatar { background: #d9f56b; }
+    #s2-user .bubble { background: #11130f; color: #f4f5ef; border-bottom-right-radius: 8px; }
+    #s2-agentrow .avatar { background: #11130f; color: #f4f5ef; }
+    #s2-agentrow .bubble { background: #f0f1ea; border: 2px solid #dfe1d6; border-bottom-left-radius: 8px; }
+    #s2-decision { left: 128px; top: 532px; width: 1296px; height: 330px; border: 2px solid #dfe1d6; border-radius: 28px; background: #fbfbf7; }
+    #s2-decision > * { position: absolute; }
+    #s2-verdict { left: 32px; top: 30px; font: 600 28px/1 "IBM Plex Mono", monospace; letter-spacing: .1em; padding: 12px 18px; border-radius: 99px; background: #e3ebfb; color: #2459c4; }
+    #s2-who { right: 32px; top: 40px; }
+    #s2-p { left: 32px; top: 104px; width: 1180px; font-weight: 500; font-size: 32px; line-height: 1.4; }
+    #s2-tag { left: 32px; top: 232px; font: 500 28px "IBM Plex Mono", monospace; padding: 12px 18px; border: 2px solid #dfe1d6; border-radius: 99px; color: #5f6359; }
+    #s2-btn { left: 300px; top: 216px; width: 400px; height: 84px; border-radius: 42px; background: #11130f; color: #f4f5ef; font-weight: 700; font-size: 32px; display: grid; place-items: center; }
+    /* The button's fill, in frame coordinates, so it can grow into the next world. */
+    #s2-fill { position: absolute; left: 648px; top: 818px; width: 400px; height: 84px; border-radius: 42px; background: #11130f; opacity: 0; }
+    #s2-cursor { position: absolute; left: 0; top: 0; width: 64px; height: 84px; }
+  </style>
+  <div data-hf-id="hf-ye2g" id="root" data-composition-id="agent" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-s77h" id="s2-card">
+      <span data-hf-id="hf-95xj" id="s2-label" class="mono">Agent / 001</span>
+      <span data-hf-id="hf-0tg4" id="s2-h">What should your agent buy?</span>
+      <div data-hf-id="hf-wnkk" id="s2-pin"><span data-hf-id="hf-qygy" class="mono">Pinned</span><b data-hf-id="hf-z10j">“Get me an unscented moisturiser under $25”</b></div>
+      <div data-hf-id="hf-k286" id="s2-user"><div data-hf-id="hf-l8h1" class="avatar" data-layout-ignore>YOU</div><div data-hf-id="hf-0wdj" class="bubble">Get me an unscented moisturiser under $25</div></div>
+      <div data-hf-id="hf-1agu" id="s2-agentrow"><div data-hf-id="hf-eotk" class="avatar" data-layout-ignore>AI</div><div data-hf-id="hf-bgp8" class="bubble" id="s2-agent">Found an unscented one: Rose Petal, $19.99</div></div>
+      <div data-hf-id="hf-nhbd" id="s2-decision">
+        <span data-hf-id="hf-vy6x" id="s2-verdict">AWAITING PAYPAL APPROVAL</span>
+        <span data-hf-id="hf-ke4n" id="s2-who" class="mono">SpendGuard</span>
+        <span data-hf-id="hf-guf1" id="s2-p">Budget and category rules passed. Approve in PayPal, then SpendGuard runs the final check.</span>
+        <span data-hf-id="hf-oi9i" id="s2-tag">Goal −2 days</span>
+        <span data-hf-id="hf-es2g" id="s2-btn">Approve in PayPal ↗</span>
+      </div>
+    </div>
+    <div data-hf-id="hf-qt3k" id="s2-fill"></div>
+    <svg data-hf-id="hf-atd5" id="s2-cursor" viewBox="0 0 32 42" aria-hidden="true">
+      <path data-hf-id="hf-9rvg" d="M2 2 L2 34 L10 26 L15.5 39 L21 36.5 L15.6 24 L27 24 Z" fill="#11130f" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Arrives on the same leftward smear scene 1 left on.
+    tl.fromTo("#s2-card", { x: 700, filter: "blur(18px)" }, { x: 0, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, 0);
+    tl.fromTo("#s2-agentrow", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.75);
+    tl.fromTo("#s2-decision", { opacity: 0, scale: 0.97, filter: "blur(10px)" },
+      { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 1.9);
+    // The cursor (tip at its top-left) travels to the Approve button and clicks it.
+    tl.fromTo("#s2-cursor", { x: 1980, y: 1140 }, { x: 860, y: 852, duration: 0.9, ease: "power3.inOut" }, 3.4);
+    tl.to("#s2-cursor", { scale: 0.86, duration: 0.08, ease: "power2.out", transformOrigin: "0% 0%" }, 4.5);
+    tl.to("#s2-cursor", { scale: 1, duration: 0.08, ease: "power2.in", transformOrigin: "0% 0%" }, 4.58);
+    tl.fromTo("#s2-btn", { backgroundColor: "#11130f" }, { backgroundColor: "#2b2f25", duration: 0.08 }, 4.5);
+    tl.to("#s2-btn", { backgroundColor: "#11130f", duration: 0.12 }, 4.58);
+    // Zoom through the button: its ink fill becomes the next scene's ground.
+    tl.fromTo("#s2-fill", { opacity: 0, scale: 1 }, { opacity: 1, duration: 0.01 }, 5.35);
+    tl.to("#s2-cursor", { opacity: 0, duration: 0.15 }, 5.35);
+    tl.to("#s2-fill", { scale: 30, duration: 0.45, ease: "power3.in" }, 5.37);
+    window.__timelines["agent"] = tl;
+  </script>
+</template>

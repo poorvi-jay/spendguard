@@ -1,0 +1,36 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef; color: #11130f; font-family: "Manrope", sans-serif;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    #s8-eyebrow { position: absolute; left: 160px; top: 330px; display: flex; align-items: center; gap: 14px; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .14em; color: #5f6359; }
+    #s8-eyebrow::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #11130f; background: #d9f56b; }
+    #s8-title { position: absolute; left: 160px; top: 390px; font: 800 120px/1.04 "Manrope", sans-serif; letter-spacing: -.04em; }
+    #s8-title span { display: block; opacity: 0; }
+    /* Recordings sit above the caption band so captions never cover the guard's reasons. */
+    .rec { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; object-fit: cover; box-shadow: 0 30px 60px -30px rgba(17,19,15,.45); }
+    .tag { position: absolute; left: 178px; top: 14px; padding: 14px 22px; border-radius: 99px; background: #11130f; color: #d9f56b; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .1em; }
+  </style>
+  <div id="root" data-composition-id="live" data-width="1920" data-height="1080">
+    <div id="s8-eyebrow">LIVE · PAYPAL SANDBOX</div>
+    <div id="s8-title"><span id="s8-t1">The real app</span><span id="s8-t2">and real PayPal</span></div>
+    <video id="s8-approve" class="clip rec" src="assets/clips/live-approve.mp4" muted playsinline
+      data-start="2.9" data-duration="17.466" data-track-index="1"></video>
+    <video id="s8-nudge" class="clip rec" src="assets/clips/live-nudge.mp4" muted playsinline
+      data-start="20.366" data-duration="19.533" data-track-index="1"></video>
+    <div id="s8-tag1" class="clip tag" data-start="3.1" data-duration="17.2" data-track-index="2">LIVE APP · 1 · A NORMAL PURCHASE</div>
+    <div id="s8-tag2" class="clip tag" data-start="20.5" data-duration="19.4" data-track-index="2">LIVE APP · 2 · OVER THE CAP</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s8-eyebrow", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0.05);
+    tl.fromTo("#s8-t1", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.1);
+    tl.fromTo("#s8-t2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.9);
+    tl.to(["#s8-eyebrow", "#s8-t1", "#s8-t2"], { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 2.65);
+    window.__timelines["live"] = tl;
+  </script>
+</template>

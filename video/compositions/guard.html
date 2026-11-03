@@ -1,0 +1,72 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-600.woff2") format("woff2"); font-weight: 600; }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Manrope", sans-serif; color: #11130f; }
+    #s3-ground { position: absolute; inset: 0; background-color: #11130f; }
+    #s3-grid {
+      position: absolute; inset: 0; opacity: 0;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .mono { font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: #5f6359; }
+    #s3-chip { position: absolute; left: 160px; top: 150px; display: flex; align-items: center; gap: 22px; }
+    #s3-chip .mono { color: #9ca191; }
+    #s3-state { position: relative; height: 64px; width: 470px; }
+    #s3-auth, #s3-void { position: absolute; left: 0; top: 0; height: 64px; padding: 0 24px; border-radius: 99px; display: flex; align-items: center; font: 600 28px "IBM Plex Mono", monospace; letter-spacing: .08em; white-space: nowrap; }
+    #s3-auth { background: #e3ebfb; color: #2459c4; }
+    #s3-void { background: #fbe3e0; color: #b3261e; opacity: 0; }
+    #s3-title { position: absolute; left: 160px; top: 360px; font: 800 128px/1.02 "Manrope", sans-serif; letter-spacing: -.035em; color: #f4f5ef; }
+    #s3-title span { display: inline-block; opacity: 0; margin-right: .22em; }
+    #s3-reqlabel { position: absolute; left: 160px; top: 300px; opacity: 0; }
+    #s3-req { position: absolute; left: 160px; top: 350px; font: 800 100px/1.08 "Manrope", sans-serif; letter-spacing: -.035em; opacity: 0; }
+    #s3-mark { background-image: linear-gradient(#d9f56b, #d9f56b); background-repeat: no-repeat; background-size: 0% 100%; padding: 0 10px; margin: 0 -10px; }
+    #s3-whatlabel { position: absolute; left: 160px; top: 650px; opacity: 0; }
+    #s3-what { position: absolute; left: 160px; top: 694px; font: 700 72px/1.1 "Manrope", sans-serif; letter-spacing: -.03em; opacity: 0; }
+    #s3-strike { position: absolute; left: -8px; right: -8px; top: 52%; height: 8px; background: #b3261e; transform-origin: 0 50%; }
+    #s3-verdict {
+      position: absolute; left: 1100px; top: 610px; width: 680px; padding: 32px 34px;
+      background: #fbe3e0; border: 2px solid #f0b8b1; border-radius: 28px; opacity: 0;
+      box-shadow: 0 30px 60px -30px rgba(17,19,15,.35);
+    }
+    #s3-verdict .pill { display: inline-block; font: 600 28px/1 "IBM Plex Mono", monospace; letter-spacing: .1em; padding: 12px 18px; border-radius: 99px; background: #b3261e; color: #fbe3e0; }
+    #s3-verdict p { margin-top: 22px; font-weight: 500; font-size: 32px; line-height: 1.4; }
+  </style>
+  <div data-hf-id="hf-bxc0" id="root" data-composition-id="guard" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-dkg9" id="s3-ground"></div>
+    <div data-hf-id="hf-27sg" id="s3-grid"></div>
+    <div data-hf-id="hf-ptxa" id="s3-chip"><span data-hf-id="hf-8zzb" class="mono" id="s3-paypal">PayPal</span><div data-hf-id="hf-ywnb" id="s3-state"><span data-hf-id="hf-ro3v" id="s3-auth">AUTHORIZED · $19.99</span><span data-hf-id="hf-kjk7" id="s3-void">VOIDED · $0 CAPTURED</span></div></div>
+    <div data-hf-id="hf-hfg2" id="s3-title"><span data-hf-id="hf-wgto">SpendGuard</span><span data-hf-id="hf-eq34">checks</span><br data-hf-id="hf-x5px"><span data-hf-id="hf-mvu2">before</span><span data-hf-id="hf-jsck">it</span><span data-hf-id="hf-g3hm">captures</span></div>
+    <div data-hf-id="hf-0mlf" id="s3-reqlabel" class="mono">Pinned request</div>
+    <div data-hf-id="hf-gr5q" id="s3-req">Get me an <span data-hf-id="hf-06fd" id="s3-mark">unscented</span><br data-hf-id="hf-rsrt">moisturiser under $25</div>
+    <div data-hf-id="hf-x6ra" id="s3-whatlabel" class="mono">What it actually is</div>
+    <div data-hf-id="hf-pdp6" id="s3-what">a light floral scent<span data-hf-id="hf-ak4v" id="s3-strike"></span></div>
+    <div data-hf-id="hf-6tsj" id="s3-verdict">
+      <span data-hf-id="hf-olsv" class="pill">BLOCKED · NO MONEY MOVED</span>
+      <p data-hf-id="hf-pink">The product has a light floral scent and does not meet the unscented requirement.</p>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s3-chip", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0);
+    tl.fromTo("#s3-title span", { opacity: 0, filter: "blur(8px)" },
+      { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.05);
+    tl.to("#s3-title span", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in", stagger: 0.03 }, 2.75);
+    // Colour flood: the ink world becomes the product's own ground; the chip stays.
+    tl.fromTo("#s3-ground", { backgroundColor: "#11130f" }, { backgroundColor: "#f4f5ef", duration: 0.4, ease: "power2.inOut" }, 2.9);
+    tl.fromTo("#s3-grid", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 2.9);
+    tl.fromTo("#s3-paypal", { color: "#9ca191" }, { color: "#5f6359", duration: 0.4 }, 2.9);
+    tl.fromTo("#s3-reqlabel", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 3.3);
+    tl.fromTo("#s3-req", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 3.35);
+    tl.fromTo("#s3-mark", { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: 0.4, ease: "power2.inOut" }, 3.9);
+    tl.fromTo("#s3-whatlabel", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 4.5);
+    tl.fromTo("#s3-what", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 4.55);
+    tl.fromTo("#s3-strike", { scaleX: 0 }, { scaleX: 1, duration: 0.35, ease: "power3.inOut" }, 5.2);
+    tl.fromTo("#s3-verdict", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.4)" }, 5.7);
+    // PayPal's authorization flips to voided.
+    tl.fromTo("#s3-auth", { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(6px)", duration: 0.15, ease: "power3.in" }, 7.0);
+    tl.fromTo("#s3-void", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.15, ease: "power4.out" }, 7.1);
+    window.__timelines["guard"] = tl;
+  </script>
+</template>

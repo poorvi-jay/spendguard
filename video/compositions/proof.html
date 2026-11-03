@@ -1,0 +1,88 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-600.woff2") format("woff2"); font-weight: 600; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef; color: #11130f; font-family: "Manrope", sans-serif;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .mono { font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: #5f6359; }
+    .beat { position: absolute; inset: 0; opacity: 0; }
+    .ask { position: absolute; right: 160px; top: 170px; padding: 22px 34px; border-radius: 32px; border-bottom-right-radius: 8px; background: #11130f; color: #f4f5ef; font-weight: 500; font-size: 40px; }
+    .card { position: absolute; left: 160px; top: 330px; width: 1600px; padding: 44px 48px; border-radius: 32px; border: 2px solid #dfe1d6; background: #fbfbf7; box-shadow: 0 30px 60px -30px rgba(17,19,15,.35); }
+    .top { display: flex; justify-content: space-between; align-items: center; }
+    .pill { font: 600 28px/1 "IBM Plex Mono", monospace; letter-spacing: .1em; padding: 14px 20px; border-radius: 99px; }
+    .card p { margin-top: 30px; font-weight: 600; font-size: 52px; letter-spacing: -.02em; line-height: 1.2; }
+    .alt { margin-top: 30px; display: flex; justify-content: space-between; padding: 24px 30px; border-radius: 20px; background: #fbefcf; font-weight: 600; font-size: 38px; }
+    #s4-nudge .pill { background: #fbefcf; color: #8a5a00; }
+    #s4-block .card { background: #fbfbf7; border-color: #f0b8b1; }
+    #s4-block .pill { background: #fbe3e0; color: #b3261e; }
+    #s4-ledger h2 { position: absolute; left: 160px; top: 150px; font: 800 88px/1.05 "Manrope", sans-serif; letter-spacing: -.035em; }
+    #s4-ledger .mono.lbl { position: absolute; left: 160px; top: 100px; }
+    #s4-table { position: absolute; left: 160px; top: 300px; width: 1600px; border-radius: 28px; border: 2px solid #dfe1d6; background: #fbfbf7; overflow: hidden; box-shadow: 0 30px 60px -30px rgba(17,19,15,.35); }
+    .row { display: grid; grid-template-columns: 620px 200px 260px 1fr; align-items: center; padding: 0 36px; height: 150px; border-top: 2px solid #dfe1d6; font-size: 32px; font-weight: 600; opacity: 0; }
+    .row.head { height: 80px; border-top: 0; opacity: 1; }
+    .row .amt { font: 500 30px "IBM Plex Mono", monospace; }
+    .row .why { font-weight: 500; font-size: 28px; line-height: 1.3; color: #3d4038; }
+    .badge { justify-self: start; font: 600 28px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; padding: 12px 16px; border-radius: 99px; }
+    .badge.approved { background: #11130f; color: #d9f56b; }
+    .badge.nudge { background: #fbefcf; color: #8a5a00; }
+    .badge.blocked { background: #fbe3e0; color: #b3261e; }
+    /* The approved badge's lime grows into the score scene. */
+    #s4-flood { position: absolute; left: 1080px; top: 436px; width: 40px; height: 40px; border-radius: 50%; background: #d9f56b; opacity: 0; }
+  </style>
+  <div data-hf-id="hf-s4mz" id="root" data-composition-id="proof" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-9471" class="beat" id="s4-nudge">
+      <div data-hf-id="hf-qxlh" class="ask">Buy me the Studio Pro noise-cancelling headphones</div>
+      <div data-hf-id="hf-vn2y" class="card">
+        <div data-hf-id="hf-sijt" class="top"><span data-hf-id="hf-ovtl" class="pill">NUDGED</span><span data-hf-id="hf-crl9" class="mono">SpendGuard</span></div>
+        <p data-hf-id="hf-g8f7">$329.00 exceeds your $100.00 per-purchase cap.</p>
+        <div data-hf-id="hf-m4y1" class="alt"><span data-hf-id="hf-6r0p">Suggested instead: Everyday Wireless Earbuds</span><b data-hf-id="hf-3v0n">$39.00</b></div>
+      </div>
+    </div>
+    <div data-hf-id="hf-8bmf" class="beat" id="s4-block">
+      <div data-hf-id="hf-wyt2" class="ask">Grab a bottle of cabernet for dinner</div>
+      <div data-hf-id="hf-i08u" class="card">
+        <div data-hf-id="hf-8kpp" class="top"><span data-hf-id="hf-olsv" class="pill">BLOCKED · NO MONEY MOVED</span><span data-hf-id="hf-pkrl" class="mono">SpendGuard</span></div>
+        <p data-hf-id="hf-axa4">'alcohol' is a blocked category.</p>
+      </div>
+    </div>
+    <div data-hf-id="hf-da4n" class="beat" id="s4-ledger">
+      <span data-hf-id="hf-7sbb" class="mono lbl">Ledger</span>
+      <h2 data-hf-id="hf-p6gv">Every decision, on the record</h2>
+      <div data-hf-id="hf-re97" id="s4-table">
+        <div data-hf-id="hf-smbr" class="row head mono"><span data-hf-id="hf-2no0">Product</span><span data-hf-id="hf-5mr1">Amount</span><span data-hf-id="hf-8ee7">Decision</span><span data-hf-id="hf-umul">Reason</span></div>
+        <div data-hf-id="hf-ybqr" class="row" id="s4-r1"><span data-hf-id="hf-y72l">Unscented Daily Moisturiser</span><span data-hf-id="hf-18b9" class="amt">$18.50</span><span data-hf-id="hf-no74" class="badge approved">APPROVED</span><span data-hf-id="hf-prr5" class="why">An unscented moisturiser, priced under $25</span></div>
+        <div data-hf-id="hf-pnuw" class="row" id="s4-r2"><span data-hf-id="hf-6u87">Rose Petal Daily Moisturiser</span><span data-hf-id="hf-5g0n" class="amt">$19.99</span><span data-hf-id="hf-d2t2" class="badge blocked">BLOCKED</span><span data-hf-id="hf-vru8" class="why">A light floral scent; not unscented</span></div>
+        <div data-hf-id="hf-qfip" class="row" id="s4-r3"><span data-hf-id="hf-xh6b">Studio Pro Headphones</span><span data-hf-id="hf-vx39" class="amt">$329.00</span><span data-hf-id="hf-1hgq" class="badge nudge">NUDGE</span><span data-hf-id="hf-2hyn" class="why">Exceeds your $100.00 per-purchase cap</span></div>
+        <div data-hf-id="hf-fk12" class="row" id="s4-r4"><span data-hf-id="hf-qua7">Reserve Cabernet Sauvignon</span><span data-hf-id="hf-d3xg" class="amt">$32.00</span><span data-hf-id="hf-89ga" class="badge blocked">BLOCKED</span><span data-hf-id="hf-czl4" class="why">'alcohol' is a blocked category</span></div>
+      </div>
+    </div>
+    <div data-hf-id="hf-ma6n" id="s4-flood"></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Beat A: the nudge.
+    tl.set("#s4-nudge", { opacity: 1 }, 0);
+    tl.fromTo("#s4-nudge .ask", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.05);
+    tl.fromTo("#s4-nudge .card", { opacity: 0, x: 120, filter: "blur(12px)" }, { opacity: 1, x: 0, filter: "blur(0px)", duration: 0.5, ease: "expo.out" }, 0.3);
+    tl.fromTo("#s4-nudge .alt", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.9);
+    // Beat B: hard cut; the new card comes in slightly large and settles.
+    tl.set("#s4-nudge", { opacity: 0 }, 3.0);
+    tl.set("#s4-block", { opacity: 1 }, 3.0);
+    tl.fromTo("#s4-block .card", { scale: 1.05, filter: "blur(6px)" }, { scale: 1, filter: "blur(0px)", duration: 0.4, ease: "expo.out" }, 3.0);
+    // Beat C: the ledger.
+    tl.set("#s4-block", { opacity: 0 }, 5.0);
+    tl.set("#s4-ledger", { opacity: 1 }, 5.0);
+    tl.fromTo("#s4-ledger h2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 5.0);
+    ["#s4-r1", "#s4-r2", "#s4-r3", "#s4-r4"].forEach((r, i) => {
+      tl.fromTo(r, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 5.25 + i * 0.07);
+    });
+    // Object becomes the world: the approved badge's lime fills the frame.
+    tl.fromTo("#s4-flood", { opacity: 0, scale: 1 }, { opacity: 1, duration: 0.05 }, 6.85);
+    tl.to("#s4-flood", { scale: 110, duration: 0.6, ease: "power2.inOut" }, 6.88);
+    window.__timelines["proof"] = tl;
+  </script>
+</template>

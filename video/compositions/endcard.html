@@ -1,0 +1,39 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-600.woff2") format("woff2"); font-weight: 600; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef; color: #11130f; font-family: "Manrope", sans-serif;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    #s6-claim { position: absolute; left: 160px; top: 340px; font: 800 120px/1.06 "Manrope", sans-serif; letter-spacing: -.04em; }
+    #s6-claim span { display: block; opacity: 0; }
+    #s6-lockup { position: absolute; left: 0; right: 0; top: 400px; display: flex; justify-content: center; align-items: center; gap: 28px; }
+    #s6-mark { width: 100px; height: 100px; border-radius: 28px; background: #11130f; display: grid; place-items: center; opacity: 0; }
+    #s6-word { font: 800 88px/1 "Manrope", sans-serif; letter-spacing: -.035em; clip-path: inset(0 100% 0 0); }
+    #s6-url { position: absolute; left: 0; right: 0; top: 640px; text-align: center; opacity: 0; }
+    #s6-url span { display: inline-block; padding: 22px 40px; border-radius: 99px; background: #11130f; color: #f4f5ef; font: 500 36px "IBM Plex Mono", monospace; }
+  </style>
+  <div data-hf-id="hf-2vor" id="root" data-composition-id="endcard" data-width="1920" data-height="1080"
+    data-composition-variables='[{"id":"live-url","type":"string","label":"Live URL","default":"spendguard-s5bu.onrender.com"}]'>
+    <div data-hf-id="hf-r2kx" id="s6-claim"><span data-hf-id="hf-lnax" id="s6-c1">Let agents shop</span><span data-hf-id="hf-usrv" id="s6-c2">Without an unchecked wallet</span></div>
+    <div data-hf-id="hf-w38x" id="s6-lockup">
+      <div data-hf-id="hf-nbwc" id="s6-mark"><svg data-hf-id="hf-s755" width="60" height="60" viewBox="0 0 24 24" aria-hidden="true"><path data-hf-id="hf-1yzk" fill="#d9f56b" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6Z"/></svg></div>
+      <div data-hf-id="hf-fufa" id="s6-word">SpendGuard</div>
+    </div>
+    <div data-hf-id="hf-in2m" id="s6-url"><span data-hf-id="hf-l8n8" data-var-text="live-url">spendguard-s5bu.onrender.com</span></div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#s6-c1", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 0.2);
+    tl.fromTo("#s6-c2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "power4.out" }, 1.0);
+    tl.to("#s6-claim span", { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in", stagger: 0.05 }, 2.9);
+    // The mark is performed, not faded: it pops in, then the wordmark wipes in beside it.
+    tl.fromTo("#s6-mark", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 3.15);
+    tl.fromTo("#s6-word", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" }, 3.45);
+    tl.fromTo("#s6-url", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 3.8);
+    window.__timelines["endcard"] = tl;
+  </script>
+</template>

@@ -1,0 +1,156 @@
+"""
+One source for the narration: the timed lines below become the <audio> clips in index.html,
+the burned-in captions (compositions/captions.html) and VOICEOVER.md.
+
+Run from video/:  ../backend/.venv/Scripts/python scripts/build_voice.py
+After changing a line's text, regenerate its wav first (see VOICEOVER.md), then run this,
+then `normalize-audio --target=<id> --lufs=-16 --write` for that id.
+"""
+
+import re
+import wave
+from html import escape
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# id, start (film seconds), section, text. Start times sit inside each section's slot.
+LINES = [
+    ("vo1", 0.3, "Hook: the poisoned listing", "This product listing hides a message written for AI shopping agents."),
+    ("vo2", 6.4, "The agent falls for it", "Your agent believes it, and asks you to approve the payment in PayPal."),
+    ("vo3", 12.3, "SpendGuard checks", "PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment."),
+    ("vo4", 22.5, "Proof montage", "Over your cap? It suggests something cheaper. A blocked category? Stopped. Every decision is logged."),
+    ("vo5", 29.8, "21/21", "Tested on twenty-one scenarios, five runs each. All twenty-one passed."),
+    ("vo7", 34.8, "Problem + setup (live settings page)", "AI agents are starting to shop for us, | and anything they read can steer them. SpendGuard sits between | any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories."),
+    ("vo8a", 50.4, "Live web app: approve (PayPal sandbox)", "Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured."),
+    ("vo8b", 70.3, "Live web app: nudge", "Over the cap? It offers something cheaper | instead of just saying no."),
+    ("vo9a", 90.2, "MCP client: intro", "And it isn't tied to our app. Any agent that connects over MCP | gets the same guard."),
+    ("vo9b", 106.5, "MCP client: blocked + voided", "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided."),
+    ("vo9c", 124.5, "MCP client: retry succeeds", "It tries again, and this time it's right."),
+    ("vo10a", 130.3, "Proof: PayPal dashboard", "On PayPal's side, | the money only moved | when the guard said yes."),
+    ("vo10b", 140.3, "Proof: ledger", "Every decision is logged with its reason."),
+    ("vo6", 150.4, "Closing", "Let your agents shop, without handing them an unchecked wallet. SpendGuard."),
+]
+MAX_WORDS = 8  # words per caption line
+
+
+def duration(vid: str) -> float:
+    with wave.open(str(ROOT / "assets" / "voice" / f"{vid}.wav")) as w:
+        return round(w.getnframes() / w.getframerate(), 3)
+
+
+def spoken(text: str) -> str:
+    return re.sub(r"\s*\|\s*", " ", text).strip()
+
+
+def phrases(text: str) -> list[str]:
+    """Split at sentence and clause ends first, then by length."""
+    # "|" in a line forces a caption break there (it is never spoken).
+    if "|" in text:
+        return [q for part in text.split("|") for q in phrases(part.strip())]
+    parts = [p for p in re.split(r"(?<=[.?!:,])\s+", text) if p]
+    out = []
+    for p in parts:
+        words = p.split()
+        # Long clauses split into even chunks, so no line ends on a dangling "of just".
+        n = -(-len(words) // MAX_WORDS)
+        size = -(-len(words) // n) if n else 0
+        while len(words) > size > 0 and n > 1:
+            out.append(" ".join(words[:size]))
+            words = words[size:]
+            n -= 1
+        if words:
+            if out and len(out[-1].split()) + len(words) <= 4 and not out[-1].endswith((".", "?", "!")):
+                out[-1] += " " + " ".join(words)
+            else:
+                out.append(" ".join(words))
+    return out
+
+
+def main() -> None:
+    old = (ROOT / "index.html").read_text(encoding="utf-8")
+    volumes = dict(re.findall(r'<audio id="(\w+)"[^>]*data-volume="([\d.]+)"', old))
+
+    audio, caps, rows = [], [], []
+    for vid, start, section, text in LINES:
+        dur = duration(vid)
+        audio.append(
+            f'      <audio id="{vid}" class="clip" src="assets/voice/{vid}.wav" data-start="{start}" '
+            f'data-duration="{dur}" data-track-index="2" data-volume="{volumes.get(vid, "1")}"></audio>'
+        )
+        ps = phrases(text)
+        total = sum(len(p.split()) for p in ps)
+        t = start
+        for i, p in enumerate(ps):
+            d = dur * len(p.split()) / total
+            caps.append(
+                f'    <div id="cap-{vid}-{i}" class="clip cap" data-start="{t:.2f}" data-duration="{d:.2f}" '
+                f'data-track-index="1"><span>{escape(p)}</span></div>'
+            )
+            t += d
+        rows.append(f"| {vid} | {section} | {start:.1f} | {start + dur:.1f} | {spoken(text)} |")
+
+    new = re.sub(
+        r"      <!-- Voiceover.*?(?=\n    </div>\n    <script>)",
+        "      <!-- Voiceover: Kokoro af_heart, generated by scripts/build_voice.py; see VOICEOVER.md -->\n" + "\n".join(audio),
+        old,
+        flags=re.S,
+    )
+    (ROOT / "index.html").write_text(new, encoding="utf-8")
+
+    (ROOT / "compositions" / "captions.html").write_text(
+        """<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    #root { position: absolute; inset: 0; pointer-events: none; }
+    .cap { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; }
+    .cap span {
+      display: inline-block; max-width: 1500px; padding: 12px 28px; border-radius: 18px;
+      background: rgba(17, 19, 15, 0.9); color: #f4f5ef;
+      font: 600 40px/1.25 "Manrope", sans-serif; letter-spacing: -0.01em;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080" data-layout-allow-caption-zone>
+"""
+        + "\n".join(caps)
+        + """
+  </div>
+  <script>
+    window.__timelines["captions"] = gsap.timeline({ paused: true });
+  </script>
+</template>
+""",
+        encoding="utf-8",
+    )
+
+    script = "\n".join(f"> {spoken(text)}" for _, _, _, text in LINES)
+    (ROOT / "VOICEOVER.md").write_text(
+        f"""# Voiceover script
+
+Voice: Kokoro `af_heart` (free, on-device) via `npx hyperframes tts`, one file per line in `assets/voice/`.
+Captions are burned in from the same lines (`compositions/captions.html`). Source of truth:
+`scripts/build_voice.py`. Film length: 156 s (2:36).
+
+| id | Section | Starts (s) | Ends (s) | Line |
+|---|---|---|---|---|
+{chr(10).join(rows)}
+
+## As one block
+
+{script}
+
+## Changing a line
+
+1. Edit its text in `scripts/build_voice.py`.
+2. `HYPERFRAMES_PYTHON=.venv-tts/Scripts/python.exe npx hyperframes tts "<line>" -v af_heart -o assets/voice/<id>.wav`
+3. `../backend/.venv/Scripts/python scripts/build_voice.py`
+4. `npx hyperframes normalize-audio . --target=<id> --lufs=-16 --write`, then `npm run check` and `npm run render`.
+""",
+        encoding="utf-8",
+    )
+    for vid, start, _, _ in LINES:
+        print(vid, start, "->", round(start + duration(vid), 2))
+
+
+if __name__ == "__main__":
+    main()
