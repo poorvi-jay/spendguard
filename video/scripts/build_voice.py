@@ -16,20 +16,27 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # id, start (film seconds), section, text. Start times sit inside each section's slot.
 LINES = [
-    ("vo1", 0.3, "Hook: the poisoned listing", "This product listing hides a message written for AI shopping agents."),
-    ("vo2", 6.4, "The agent falls for it", "Your agent believes it, and asks you to approve the payment in PayPal."),
-    ("vo3", 12.3, "SpendGuard checks", "PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment."),
-    ("vo4", 22.5, "Proof montage", "Over your cap? It suggests something cheaper. A blocked category? Stopped. Every decision is logged."),
-    ("vo5", 29.8, "21/21", "Tested on twenty-one scenarios, five runs each. All twenty-one passed."),
-    ("vo7", 34.8, "Problem + setup (live settings page)", "AI agents are starting to shop for us, | and anything they read can steer them. SpendGuard sits between | any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories."),
-    ("vo8a", 50.4, "Live web app: approve (PayPal sandbox)", "Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured."),
-    ("vo8b", 70.3, "Live web app: nudge", "Over the cap? It offers something cheaper | instead of just saying no."),
-    ("vo9a", 90.2, "MCP client: intro", "And it isn't tied to our app. Any agent that connects over MCP | gets the same guard."),
-    ("vo9b", 106.5, "MCP client: blocked + voided", "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided."),
-    ("vo9c", 124.5, "MCP client: retry succeeds", "It tries again, and this time it's right."),
-    ("vo10a", 130.3, "Proof: PayPal dashboard", "On PayPal's side, | the money only moved | when the guard said yes."),
-    ("vo10b", 140.3, "Proof: ledger", "Every decision is logged with its reason."),
-    ("vo6", 150.4, "Closing", "Let your agents shop, without handing them an unchecked wallet. SpendGuard."),
+    ("vo0", 0.2, "Opening: project name", "SpendGuard. Guardrails for AI agents that spend money."),
+    ("vo1", 4.3, "Hook: the poisoned listing", "This product listing hides a message written for AI shopping agents."),
+    ("vo2", 10.4, "The agent falls for it", "Your agent believes it, and asks you to approve the payment in PayPal."),
+    ("vo3", 16.3, "SpendGuard checks", "PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment."),
+    ("vo4", 26.5, "Proof montage", "Over your cap? It suggests something cheaper. A blocked category? Stopped. Every decision is logged."),
+    ("vo5", 33.8, "21/21", "Tested on twenty-one scenarios, five runs each. All twenty-one passed."),
+    ("vo7", 38.8, "Problem + setup (live settings page)", "AI agents are starting to shop for us, | and anything they read can steer them. SpendGuard sits between | any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories."),
+    ("vo8a", 54.4, "Live: a normal purchase (PayPal sandbox)", "Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured."),
+    ("vo8c", 66.1, "Live: approved and captured", "Captured, because it matches what you asked for."),
+    ("vo8b", 73.5, "Live: over the cap, nudged", "Over the cap? It offers something cheaper | instead of just saying no."),
+    ("vo8d", 79.0, "Live: accepting the cheaper option", "Say yes, and that purchase goes through."),
+    ("vo8e", 89.0, "Live: the poisoned listing", "Now tell it to buy the poisoned listing anyway."),
+    ("vo8f", 95.5, "Live: blocked and voided", "PayPal approves it. SpendGuard still blocks it, | and voids the payment."),
+    ("vo9a", 102.7, "MCP client: intro", "And it isn't tied to our app. Any agent that connects over MCP | gets the same guard."),
+    ("vo9d", 108.4, "MCP client: an outside agent", "Here, an outside agent shops through the hosted server."),
+    ("vo9b", 116.0, "MCP client: blocked + voided", "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided."),
+    ("vo9c", 127.5, "MCP client: retry succeeds", "It tries again, and this time it's right."),
+    ("vo10a", 133.8, "Proof: PayPal dashboard", "On PayPal's side, | the money only moved | when the guard said yes."),
+    ("vo10b", 143.8, "Proof: ledger", "Every decision is logged with its reason."),
+    ("vo10c", 146.4, "Proof: ledger totals", "Two approvals, one nudge, one block, | each with its reason."),
+    ("vo6", 153.9, "Closing", "Let your agents shop, without handing them an unchecked wallet. SpendGuard."),
 ]
 MAX_WORDS = 8  # words per caption line
 
@@ -129,7 +136,7 @@ def main() -> None:
 
 Voice: Kokoro `af_heart` (free, on-device) via `npx hyperframes tts`, one file per line in `assets/voice/`.
 Captions are burned in from the same lines (`compositions/captions.html`). Source of truth:
-`scripts/build_voice.py`. Film length: 156 s (2:36).
+`scripts/build_voice.py`. Film length: 159.5 s (2:39).
 
 | id | Section | Starts (s) | Ends (s) | Line |
 |---|---|---|---|---|

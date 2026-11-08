@@ -21,14 +21,21 @@ async function approveInPayPal(page) {
   await approve.waitFor({ timeout: 90000 });
   await approve.scrollIntoViewIfNeeded();
   await page.waitForTimeout(2500);
-  await approve.click();
-  await page.waitForURL(/paypal\.com/, { timeout: 60000 });
+  // PayPal can be slow: a slow navigation is not a failed click.
+  await approve.click({ timeout: 180000 });
+  await page.waitForURL(/paypal\.com/, { timeout: 180000 });
   await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
   await page.waitForTimeout(2000);
   // Never type credentials or solve challenges: stop and let the person handle it.
-  if (await page.locator('input[type="password"], #email, iframe[title*="captcha" i]').count()) {
+  // Only PayPal's own visible login counts (the app has a hidden password box of its own).
+  if (page.url().includes("paypal.com") && await page.locator('input[type="password"]:visible, #email:visible, iframe[title*="captcha" i]').count()) {
     console.log(`WAITING ${new Date().toISOString()}: sign in on PayPal in the window yourself (the script never types it)`);
-    await page.locator('input[type="password"], #email').first().waitFor({ state: "detached", timeout: 300000 });
+    // Poll instead of evaluating script: PayPal's page security forbids eval.
+    const deadline = Date.now() + 600000;
+    while (Date.now() < deadline && page.url().includes("paypal.com")
+      && await page.locator('input[type="password"]:visible, #email:visible').count()) {
+      await page.waitForTimeout(1000);
+    }
     await page.waitForLoadState("networkidle", { timeout: 60000 }).catch(() => {});
     await page.waitForTimeout(2000);
     console.log(`SIGNED IN ${new Date().toISOString()}`);
@@ -38,10 +45,13 @@ async function approveInPayPal(page) {
   // PayPal's main submit button, never an offer like "Pay in 4".
   const pay = page.locator("#one-time-cta, #payment-submit-btn, [data-testid='submit-button-initial']")
     .or(page.getByRole("button", { name: /^(complete purchase|continue to review order|pay now|agree & continue)$/i })).first();
-  await pay.waitFor({ timeout: 60000 });
-  await page.waitForTimeout(1500);
-  await pay.click();
-  await page.waitForURL(/localhost:8000\/(#demo)?(\?.*)?$|status=/, { timeout: 90000 });
+  // Click Pay, unless the person already finished in PayPal and we're back in the app.
+  await Promise.race([pay.waitFor({ timeout: 300000 }), page.waitForURL(/localhost:8000/, { timeout: 300000 })]);
+  if (page.url().includes("paypal.com")) {
+    await page.waitForTimeout(1500);
+    await pay.click({ timeout: 180000 });
+  }
+  await page.waitForURL(/localhost:8000\/(#demo)?(\?.*)?$|status=/, { timeout: 300000 });
   await page.waitForSelector("#messages .decision.approved, #messages .decision.blocked", { timeout: 60000 });
   await page.waitForTimeout(500);
   await page.evaluate(() => document.querySelector("#demo .card").scrollIntoView({ block: "start" }));
@@ -94,7 +104,12 @@ async function approveInPayPal(page) {
     } else {
       await page.locator("#new-request").click();
       await page.waitForTimeout(800);
-      if (which === "approve") {
+      if (which === "block") {
+        // The user overrides the agent with the poisoned listing; SpendGuard judges the real product.
+        await send(page, "Get me an unscented moisturiser under $25");
+        await page.waitForTimeout(2500);
+        await send(page, "No, buy the Rose Petal Daily Moisturiser (moist-04) instead. Check it out.");
+      } else if (which === "approve") {
         await send(page, "Get me an unscented moisturiser under $25");
       } else {
         await send(page, "Buy me the Studio Pro noise-cancelling headphones");
@@ -106,7 +121,7 @@ async function approveInPayPal(page) {
     }
   } catch (e) {
     console.error("STOPPED:", e.message);
-    await page.screenshot({ path: path.join(OUT, `${which}-stopped.png`) });
+    await page.screenshot({ path: path.join(OUT, `${which}-stopped.png`) }).catch(() => {});
   }
   const video = page.video();
   await context.close();

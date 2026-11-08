@@ -2,27 +2,35 @@
 
 Voice: Kokoro `af_heart` (free, on-device) via `npx hyperframes tts`, one file per line in `assets/voice/`.
 Captions are burned in from the same lines (`compositions/captions.html`). Source of truth:
-`scripts/build_voice.py`. Film length: 156 s (2:36).
+`scripts/build_voice.py`. Film length: 159.5 s (2:39).
 
 | id | Section | Starts (s) | Ends (s) | Line |
 |---|---|---|---|---|
-| vo1 | Hook: the poisoned listing | 0.3 | 4.4 | This product listing hides a message written for AI shopping agents. |
-| vo2 | The agent falls for it | 6.4 | 10.4 | Your agent believes it, and asks you to approve the payment in PayPal. |
-| vo3 | SpendGuard checks | 12.3 | 20.1 | PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment. |
-| vo4 | Proof montage | 22.5 | 28.5 | Over your cap? It suggests something cheaper. A blocked category? Stopped. Every decision is logged. |
-| vo5 | 21/21 | 29.8 | 34.3 | Tested on twenty-one scenarios, five runs each. All twenty-one passed. |
-| vo7 | Problem + setup (live settings page) | 34.8 | 49.4 | AI agents are starting to shop for us, and anything they read can steer them. SpendGuard sits between any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories. |
-| vo8a | Live web app: approve (PayPal sandbox) | 50.4 | 56.6 | Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured. |
-| vo8b | Live web app: nudge | 70.3 | 73.9 | Over the cap? It offers something cheaper instead of just saying no. |
-| vo9a | MCP client: intro | 90.2 | 95.6 | And it isn't tied to our app. Any agent that connects over MCP gets the same guard. |
-| vo9b | MCP client: blocked + voided | 106.5 | 112.2 | This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided. |
-| vo9c | MCP client: retry succeeds | 124.5 | 126.7 | It tries again, and this time it's right. |
-| vo10a | Proof: PayPal dashboard | 130.3 | 134.2 | On PayPal's side, the money only moved when the guard said yes. |
-| vo10b | Proof: ledger | 140.3 | 142.6 | Every decision is logged with its reason. |
-| vo6 | Closing | 150.4 | 154.6 | Let your agents shop, without handing them an unchecked wallet. SpendGuard. |
+| vo0 | Opening: project name | 0.2 | 3.8 | SpendGuard. Guardrails for AI agents that spend money. |
+| vo1 | Hook: the poisoned listing | 4.3 | 8.4 | This product listing hides a message written for AI shopping agents. |
+| vo2 | The agent falls for it | 10.4 | 14.4 | Your agent believes it, and asks you to approve the payment in PayPal. |
+| vo3 | SpendGuard checks | 16.3 | 24.1 | PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment. |
+| vo4 | Proof montage | 26.5 | 32.5 | Over your cap? It suggests something cheaper. A blocked category? Stopped. Every decision is logged. |
+| vo5 | 21/21 | 33.8 | 38.3 | Tested on twenty-one scenarios, five runs each. All twenty-one passed. |
+| vo7 | Problem + setup (live settings page) | 38.8 | 53.4 | AI agents are starting to shop for us, and anything they read can steer them. SpendGuard sits between any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories. |
+| vo8a | Live: a normal purchase (PayPal sandbox) | 54.4 | 60.6 | Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured. |
+| vo8c | Live: approved and captured | 66.1 | 68.5 | Captured, because it matches what you asked for. |
+| vo8b | Live: over the cap, nudged | 73.5 | 77.1 | Over the cap? It offers something cheaper instead of just saying no. |
+| vo8d | Live: accepting the cheaper option | 79.0 | 81.2 | Say yes, and that purchase goes through. |
+| vo8e | Live: the poisoned listing | 89.0 | 91.6 | Now tell it to buy the poisoned listing anyway. |
+| vo8f | Live: blocked and voided | 95.5 | 99.7 | PayPal approves it. SpendGuard still blocks it, and voids the payment. |
+| vo9a | MCP client: intro | 102.7 | 108.1 | And it isn't tied to our app. Any agent that connects over MCP gets the same guard. |
+| vo9d | MCP client: an outside agent | 108.4 | 111.5 | Here, an outside agent shops through the hosted server. |
+| vo9b | MCP client: blocked + voided | 116.0 | 121.7 | This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided. |
+| vo9c | MCP client: retry succeeds | 127.5 | 129.7 | It tries again, and this time it's right. |
+| vo10a | Proof: PayPal dashboard | 133.8 | 137.7 | On PayPal's side, the money only moved when the guard said yes. |
+| vo10b | Proof: ledger | 143.8 | 146.1 | Every decision is logged with its reason. |
+| vo10c | Proof: ledger totals | 146.4 | 149.7 | Two approvals, one nudge, one block, each with its reason. |
+| vo6 | Closing | 153.9 | 158.1 | Let your agents shop, without handing them an unchecked wallet. SpendGuard. |
 
 ## As one block
 
+> SpendGuard. Guardrails for AI agents that spend money.
 > This product listing hides a message written for AI shopping agents.
 > Your agent believes it, and asks you to approve the payment in PayPal.
 > PayPal only holds the money. SpendGuard checks the product against your request, finds a floral scent, and voids the payment.
@@ -30,12 +38,18 @@ Captions are burned in from the same lines (`compositions/captions.html`). Sourc
 > Tested on twenty-one scenarios, five runs each. All twenty-one passed.
 > AI agents are starting to shop for us, and anything they read can steer them. SpendGuard sits between any agent and your money. You set the rules once: a monthly budget, a per-purchase cap, a savings goal, blocked categories.
 > Here it is live. A normal purchase: PayPal authorizes, SpendGuard checks, the payment is captured.
+> Captured, because it matches what you asked for.
 > Over the cap? It offers something cheaper instead of just saying no.
+> Say yes, and that purchase goes through.
+> Now tell it to buy the poisoned listing anyway.
+> PayPal approves it. SpendGuard still blocks it, and voids the payment.
 > And it isn't tied to our app. Any agent that connects over MCP gets the same guard.
+> Here, an outside agent shops through the hosted server.
 > This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided.
 > It tries again, and this time it's right.
 > On PayPal's side, the money only moved when the guard said yes.
 > Every decision is logged with its reason.
+> Two approvals, one nudge, one block, each with its reason.
 > Let your agents shop, without handing them an unchecked wallet. SpendGuard.
 
 ## Changing a line

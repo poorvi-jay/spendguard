@@ -1,6 +1,6 @@
 # Recording checklist: the two placeholder slots
 
-Two parts of the 2:36 film need your screen and your logins, so they're labelled placeholder slots. Record
+Two parts of the 2:39 film need your screen and your logins, so they're labelled placeholder slots. Record
 each one, save it at the exact path, and tell me. I'll swap it in, check and re-render. You can also swap it in
 yourself (the snippet is under each clip).
 
@@ -14,17 +14,17 @@ Clipchamp (included with Windows) and export 1080p.
 
 ---
 
-## 1. MCP client scene: `video/assets/clips/mcp.mp4`, exactly 34.4 s
+## 1. MCP client scene: `video/assets/clips/mcp.mp4`, exactly 25.4 s
 
-Plays at film 1:35.6–2:10.0. The voiceover is already timed to it, so these beats need to land at these
+Plays at film 1:48.1–2:13.5. The voiceover is already timed to it, so these beats need to land at these
 points **in your clip**:
 
 | In your clip | Must be on screen | Voiceover over it |
 |---|---|---|
-| 0–10 s | The request, and the agent picking the **Rose Petal** moisturiser and checking out | (plays over the scene title before your clip) |
-| **~11–17 s** | **Blocked** for the Rose Petal, and the authorization **voided** (SpendGuard's reason visible) | "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided." |
-| 17–28 s | The agent retrying: picking the genuinely unscented one, PayPal approval | (none) |
-| **~29–34.4 s** | The unscented one **approved / captured** | "It tries again, and this time it's right." |
+| 0–7.5 s | The request, and the agent picking the **Rose Petal** moisturiser and checking out | "Here, an outside agent shops through the hosted server." |
+| **~7.5–13.5 s** | **Blocked** for the Rose Petal, and the authorization **voided** (SpendGuard's reason visible) | "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided." |
+| 13.5–19 s | The agent retrying: picking the genuinely unscented one, PayPal approval | (none) |
+| **~19–25.4 s** | The unscented one **approved / captured** | "It tries again, and this time it's right." |
 
 **Setup**
 1. Use the hosted server, so this shows a real external client: in Claude, go to **Settings → Connectors**, open
@@ -40,12 +40,12 @@ points **in your clip**:
    You should see **blocked** with the floral-scent reason, and the authorization **voided**.
 3. `That was blocked. Find a genuinely unscented one and buy it.` → approve in PayPal → `Confirm the purchase.` → **approved / captured**.
 
-Record the whole run, then cut it down to 34.4 s with the two key moments at the times above.
+Record the whole run, then cut it down to 25.4 s with the two key moments at the times above.
 
 **Swap it in:** in `video/compositions/mcp.html`, replace the `<div id="s9-slot" …>…</div>` block with:
 ```html
 <video id="s9-rec" class="clip rec" src="assets/clips/mcp.mp4" muted playsinline
-  data-start="5.6" data-duration="34.4" data-track-index="1"></video>
+  data-start="5.6" data-duration="25.4" data-track-index="1"></video>
 ```
 and add this rule inside its `<style>`:
 `.rec { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; object-fit: cover; }`
@@ -54,13 +54,13 @@ and add this rule inside its `<style>`:
 
 ## 2. PayPal sandbox dashboard: `video/assets/clips/paypal-dashboard.mp4`, exactly 10.0 s
 
-Plays at film 2:10.0–2:20.0, under: "On PayPal's side, the money only moved when the guard said yes."
+Plays at film 2:13.5–2:23.5, under: "On PayPal's side, the money only moved when the guard said yes."
 
 **Must show:** PayPal's own **merchant** activity list with **one captured/completed payment** and **one voided
 authorization**, both readable.
 
 1. Record the MCP scene first, so the voided Rose Petal authorization ($19.99) exists. The live web-app takes
-   already left captured payments ($18.50 and $39.00).
+   left captured payments ($18.50 and $39.00) and a voided $19.99 authorization.
 2. Log in at **https://www.sandbox.paypal.com** as your **US sandbox Business** (merchant) account. That's the
    business account your sandbox app is linked to, not the buyer.
 3. Open **Activity** (All transactions). Zoom so the status column reads clearly. Hover or highlight the
@@ -86,4 +86,4 @@ Then render with FFmpeg on the PATH:
 ```bash
 npx hyperframes render --quality delivery -o renders/spendguard-demo-extended.mp4
 ```
-The film stays 2:36. Don't change the clip lengths without asking me to retime the voiceover.
+The film stays 2:39.5. Don't change the clip lengths without asking me to retime the voiceover.

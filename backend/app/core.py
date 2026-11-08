@@ -183,6 +183,8 @@ def checkout(product_id: str) -> dict:
     return {
         "status": "pending_approval",
         "order_id": order["order_id"],
+        "product_name": product["name"],
+        "amount": product["price"],
         "approval_url": order["approval_url"],
         "goal_impact": impact,
         "note": "Open approval_url, approve as the sandbox buyer, then call confirm_purchase(order_id).",

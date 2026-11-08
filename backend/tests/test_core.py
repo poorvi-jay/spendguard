@@ -56,6 +56,7 @@ def test_checkout_reports_goal_impact(paypal):
     result = core.checkout("moist-01")
     assert result["status"] == "pending_approval"
     assert result["goal_impact"]["days_delayed"] > 0
+    assert (result["product_name"], result["amount"]) == ("Unscented Daily Moisturiser", 18.5)
 
 
 def test_paypal_error_is_reported_not_raised(monkeypatch):

@@ -1,0 +1,35 @@
+<template>
+  <style>
+    @font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope.woff2") format("woff2"); font-weight: 200 800; }
+    @font-face { font-family: "IBM Plex Mono"; src: url("assets/fonts/IBMPlexMono-500.woff2") format("woff2"); font-weight: 500; }
+    #root {
+      position: absolute; inset: 0; overflow: hidden; background-color: #f4f5ef; color: #11130f; font-family: "Manrope", sans-serif;
+      background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    #s0-lockup { position: absolute; left: 0; right: 0; top: 330px; display: flex; justify-content: center; align-items: center; gap: 40px; }
+    #s0-mark { width: 150px; height: 150px; border-radius: 42px; background: #11130f; display: grid; place-items: center; }
+    #s0-word { font: 800 150px/1 "Manrope", sans-serif; letter-spacing: -.045em; }
+    #s0-tag { position: absolute; left: 0; right: 0; top: 560px; text-align: center; font: 600 52px/1.2 "Manrope", sans-serif; letter-spacing: -.02em; color: #3d4038; opacity: 0; }
+    #s0-tag b { background: #d9f56b; color: #11130f; padding: 0 12px; border-radius: 10px; font-weight: 700; }
+    #s0-event { position: absolute; left: 0; right: 0; top: 700px; text-align: center; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .14em; color: #5f6359; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="intro" data-width="1920" data-height="1080">
+    <div id="s0-lockup">
+      <div id="s0-mark"><svg width="92" height="92" viewBox="0 0 24 24" aria-hidden="true"><path fill="#d9f56b" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm-1.2 13.6-3.4-3.4 1.4-1.4 2 2 4.6-4.6 1.4 1.4-6 6Z"/></svg></div>
+      <div id="s0-word">SpendGuard</div>
+    </div>
+    <div id="s0-tag">Guardrails for AI agents that <b>spend money</b></div>
+    <div id="s0-event">PAYPAL AI HACKATHON · LIVE ON THE PAYPAL SANDBOX</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // The name is on screen from frame 0 (it's the thumbnail); the mark lands, then the line.
+    tl.fromTo("#s0-mark", { scale: 0.6 }, { scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 0);
+    tl.fromTo("#s0-word", { clipPath: "inset(0 30% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5, ease: "power3.out" }, 0.05);
+    tl.fromTo("#s0-tag", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" }, 0.7);
+    tl.fromTo("#s0-event", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 1.3);
+    tl.to(["#s0-lockup", "#s0-tag", "#s0-event"], { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in" }, 3.75);
+    window.__timelines["intro"] = tl;
+  </script>
+</template>
