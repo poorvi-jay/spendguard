@@ -125,10 +125,7 @@
   /* ---- sections */
   section.block { padding: 64px 0; border-top: 1px solid var(--line); }
   .video { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--dark); }
-  .video iframe, .video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  .video .soon { position: absolute; inset: 0; display: grid; place-content: center; gap: 10px; text-align: center; color: var(--dark-text); padding: 24px; }
-  .video .soon .play { width: 64px; height: 64px; margin: 0 auto; border-radius: 50%; background: var(--lime); display: grid; place-items: center; }
-  .video .soon p { margin: 0; color: var(--dark-muted); font-size: 15px; }
+  .video video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   section.block h2.title { margin: 0 0 28px; font-size: clamp(30px, 3.6vw, 42px); line-height: 1.08; font-weight: 800; letter-spacing: -.03em; max-width: 640px; }
 
   /* steps */
@@ -243,11 +240,7 @@
       <p class="eyebrow">Product demo</p>
       <h2 class="title">Watch an agent get stopped before the money moves.</h2>
       <div class="card video" id="video-frame">
-        <div class="soon">
-          <div class="play"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#11130f" d="M8 5v14l11-7z"/></svg></div>
-          <strong>Demo video coming soon</strong>
-          <p>Until then, try the live demo above.</p>
-        </div>
+        <video src="/demo.mp4" controls preload="metadata" playsinline></video>
       </div>
     </section>
 
@@ -356,8 +349,6 @@ let auditFilter = "all";
 const saveChat = () => store(sessionStorage, "sg_chat", JSON.stringify(messages));
 
 // Paste the demo's YouTube link (unlisted works) to show it in the Product demo section.
-const DEMO_VIDEO = "";
-
 const EXAMPLES = [
   ["Get me an unscented moisturiser under $25", "Approve"],
   ["Buy me the Studio Pro noise-cancelling headphones", "Nudge"],
@@ -578,17 +569,6 @@ function renderAudit() {
     tr.insertCell().textContent = r.reason;
   }
 }
-
-function showVideo(link) {
-  const id = link.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)?.[1];
-  if (!id) return;
-  const player = el("iframe");
-  player.src = `https://www.youtube-nocookie.com/embed/${id}`;
-  player.allow = "fullscreen; picture-in-picture";
-  player.title = "SpendGuard product demo";
-  $("video-frame").replaceChildren(player);
-}
-showVideo(DEMO_VIDEO);
 
 function refresh() {
   renderChat();

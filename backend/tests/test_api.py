@@ -39,6 +39,8 @@ def test_rest_requires_app_password_not_mcp_token(monkeypatch):
     assert client.get("/settings", headers={"Authorization": "Bearer app-pass"}).status_code == 200
     assert client.get("/").status_code == 200
     assert client.get("/health").status_code == 200
+    video = client.get("/demo.mp4", headers={"Range": "bytes=0-99"})
+    assert (video.status_code, video.headers["content-type"]) == (206, "video/mp4")
 
 
 def test_missing_secret_fails_closed_on_render(monkeypatch):
