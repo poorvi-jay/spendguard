@@ -1,6 +1,6 @@
 # REVIEW: SpendGuard demo, extended cut
 
-159.5 s (2:39) · 1920 × 1080 · 30 fps · voiceover + burned-in captions, no music.
+128.5 s (2:08) · 1920 × 1080 · 30 fps · voiceover + burned-in captions, no music.
 Render: `renders/spendguard-demo-extended.mp4`. The 40.5 s motion cut is kept as the opening.
 
 ## Structure
@@ -11,9 +11,8 @@ Render: `renders/spendguard-demo-extended.mp4`. The 40.5 s motion cut is kept as
 | 0:04–0:38.5 | Motion opening: poisoned listing → agent falls for it → guard blocks and voids → proof → 21/21 | motion graphics (HyperFrames) |
 | 0:38.5–0:54 | Problem + setup | title, then a **real recording** of the settings page |
 | 0:54–1:42.5 | Live web app | title, then **real recordings** on the **PayPal sandbox**: approve (captured), nudge (cheaper option accepted, captured), poisoned listing (PayPal approved, SpendGuard **blocked and voided**) |
-| 1:42.5–2:13.5 | MCP client | title + **placeholder slot, 25.4 s** (`RECORDING-CHECKLIST.md` §1) |
-| 2:13.5–2:33.5 | Proof | **placeholder slot, 10 s** (PayPal merchant activity, §2) + **real recording** of the ledger (Approved 2, Nudged 1, Blocked 1) |
-| 2:33.5–2:39.5 | Closing | end card |
+| 1:42.5–2:02.5 | Proof | **real recording** of PayPal's own sandbox merchant Transactions ($19.99 authorization Canceled, $39.00 and $18.50 Completed) + **real recording** of the ledger (Approved 2, Nudged 1, Blocked 1) |
+| 2:02.5–2:08.5 | Closing | end card |
 
 ## What's real, and how it was recorded
 
@@ -31,7 +30,8 @@ Render: `renders/spendguard-demo-extended.mp4`. The 40.5 s motion cut is kept as
   so the text records large. No content or behaviour was changed.
 - Edits only remove waiting time (agent thinking, PayPal's page idling) and the PayPal sign-in screen (it shows the
   sandbox email). Every outcome is shown as it happened. Cut list: `recording/edit_live.sh`.
-- The opening's "agent falls for it" is staged motion graphics. The MCP slot is where a real agent falls for it.
+- The opening's "agent falls for it" is staged motion graphics; the live block take is the real one.
+- The MCP-client scene was dropped (claude.ai's bot check blocks an automated browser). MCP is covered in the README.
 
 ## Review-feedback round
 
@@ -46,8 +46,7 @@ the shorter vo4, and the end card moved to the end of the film.
 
 ## Measured vs only looked at
 
-- `hyperframes check`: 0 errors. Warnings kept on purpose: `dead_stretch` over the two placeholder slots (they go
-  away when the recordings are dropped in), `timeline_track_too_dense` on the captions track (49 caption groups),
+- `hyperframes check`: 0 errors. Warnings kept on purpose: `timeline_track_too_dense` on the captions track (49 caption groups),
   and `nested_media_start_basis_ambiguous` (scene-local timing is intended).
 - Looked at: snapshots of every new section, the caption band, the tag band, and the PayPal frames (real PayPal
   checkout with its logo, then the Pay click).

@@ -29,14 +29,10 @@ LINES = [
     ("vo8d", 79.0, "Live: accepting the cheaper option", "Say yes, and that purchase goes through."),
     ("vo8e", 89.0, "Live: the poisoned listing", "Now tell it to buy the poisoned listing anyway."),
     ("vo8f", 95.5, "Live: blocked and voided", "PayPal approves it. SpendGuard still blocks it, | and voids the payment."),
-    ("vo9a", 102.7, "MCP client: intro", "And it isn't tied to our app. Any agent that connects over MCP | gets the same guard."),
-    ("vo9d", 108.4, "MCP client: an outside agent", "Here, an outside agent shops through the hosted server."),
-    ("vo9b", 116.0, "MCP client: blocked + voided", "This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided."),
-    ("vo9c", 127.5, "MCP client: retry succeeds", "It tries again, and this time it's right."),
-    ("vo10a", 133.8, "Proof: PayPal dashboard", "On PayPal's side, | the money only moved | when the guard said yes."),
-    ("vo10b", 143.8, "Proof: ledger", "Every decision is logged with its reason."),
-    ("vo10c", 146.4, "Proof: ledger totals", "Two approvals, one nudge, one block, | each with its reason."),
-    ("vo6", 153.9, "Closing", "Let your agents shop, without handing them an unchecked wallet. SpendGuard."),
+    ("vo10a", 102.8, "Proof: PayPal dashboard", "On PayPal's side, | the money only moved | when the guard said yes."),
+    ("vo10b", 112.8, "Proof: ledger", "Every decision is logged with its reason."),
+    ("vo10c", 115.4, "Proof: ledger totals", "Two approvals, one nudge, one block, | each with its reason."),
+    ("vo6", 122.9, "Closing", "Let your agents shop, without handing them an unchecked wallet. SpendGuard."),
 ]
 MAX_WORDS = 8  # words per caption line
 
@@ -136,7 +132,7 @@ def main() -> None:
 
 Voice: Kokoro `af_heart` (free, on-device) via `npx hyperframes tts`, one file per line in `assets/voice/`.
 Captions are burned in from the same lines (`compositions/captions.html`). Source of truth:
-`scripts/build_voice.py`. Film length: 159.5 s (2:39).
+`scripts/build_voice.py`. Film length: 128.5 s (2:08).
 
 | id | Section | Starts (s) | Ends (s) | Line |
 |---|---|---|---|---|

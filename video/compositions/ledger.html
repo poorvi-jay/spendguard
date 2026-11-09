@@ -7,22 +7,15 @@
       background-image: linear-gradient(rgba(17,19,15,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(17,19,15,.06) 1px, transparent 1px);
       background-size: 56px 56px;
     }
-    /* PLACEHOLDER: replace with the PayPal sandbox dashboard recording (RECORDING-CHECKLIST.md, clip paypal-dashboard.mp4). */
-    #s10-slot { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; border: 4px dashed #9ca191; border-radius: 36px; display: grid; place-content: center; text-align: center; gap: 18px; background: #fbfbf7; }
-    #s10-slot b { font: 800 72px/1.1 "Manrope", sans-serif; letter-spacing: -.03em; }
-    #s10-slot span { font: 500 30px/1.5 "IBM Plex Mono", monospace; color: #5f6359; }
-    #s10-rec { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; object-fit: cover; box-shadow: 0 30px 60px -30px rgba(17,19,15,.45); }
+    .rec { position: absolute; left: 178px; top: 76px; width: 1564px; height: 880px; border-radius: 24px; object-fit: cover; box-shadow: 0 30px 60px -30px rgba(17,19,15,.45); }
     .tag { position: absolute; left: 178px; top: 14px; padding: 14px 22px; border-radius: 99px; background: #11130f; color: #d9f56b; font: 500 28px "IBM Plex Mono", monospace; letter-spacing: .1em; }
   </style>
   <div id="root" data-composition-id="ledger" data-width="1920" data-height="1080">
-    <div id="s10-slot" class="clip" data-start="0" data-duration="10" data-track-index="1">
-      <b>Recording slot: PayPal sandbox dashboard</b>
-      <span>10.0 s · assets/clips/paypal-dashboard.mp4 · see RECORDING-CHECKLIST.md</span>
-      <span>Activity: one CAPTURED payment, one VOIDED authorization</span>
-    </div>
+    <video id="s10-pp" class="clip rec" src="assets/clips/paypal-dashboard.mp4" muted playsinline
+      data-start="0" data-duration="10" data-track-index="1"></video>
     <div id="s10-tag1" class="clip tag" data-start="0" data-duration="10" data-track-index="2">PAYPAL SANDBOX · MERCHANT ACTIVITY</div>
-    <video id="s10-rec" class="clip" src="assets/clips/ledger.mp4" muted playsinline
-      data-start="10" data-duration="10" data-media-start="1" data-track-index="1"></video>
+    <video id="s10-rec" class="clip rec" src="assets/clips/ledger.mp4" muted playsinline
+      data-start="10" data-duration="10" data-track-index="1"></video>
     <div id="s10-tag2" class="clip tag" data-start="10" data-duration="10" data-track-index="2">LIVE APP · LEDGER</div>
   </div>
   <script>

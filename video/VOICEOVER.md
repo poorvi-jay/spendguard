@@ -2,7 +2,7 @@
 
 Voice: Kokoro `af_heart` (free, on-device) via `npx hyperframes tts`, one file per line in `assets/voice/`.
 Captions are burned in from the same lines (`compositions/captions.html`). Source of truth:
-`scripts/build_voice.py`. Film length: 159.5 s (2:39).
+`scripts/build_voice.py`. Film length: 128.5 s (2:08).
 
 | id | Section | Starts (s) | Ends (s) | Line |
 |---|---|---|---|---|
@@ -19,14 +19,10 @@ Captions are burned in from the same lines (`compositions/captions.html`). Sourc
 | vo8d | Live: accepting the cheaper option | 79.0 | 81.2 | Say yes, and that purchase goes through. |
 | vo8e | Live: the poisoned listing | 89.0 | 91.6 | Now tell it to buy the poisoned listing anyway. |
 | vo8f | Live: blocked and voided | 95.5 | 99.7 | PayPal approves it. SpendGuard still blocks it, and voids the payment. |
-| vo9a | MCP client: intro | 102.7 | 108.1 | And it isn't tied to our app. Any agent that connects over MCP gets the same guard. |
-| vo9d | MCP client: an outside agent | 108.4 | 111.5 | Here, an outside agent shops through the hosted server. |
-| vo9b | MCP client: blocked + voided | 116.0 | 121.7 | This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided. |
-| vo9c | MCP client: retry succeeds | 127.5 | 129.7 | It tries again, and this time it's right. |
-| vo10a | Proof: PayPal dashboard | 133.8 | 137.7 | On PayPal's side, the money only moved when the guard said yes. |
-| vo10b | Proof: ledger | 143.8 | 146.1 | Every decision is logged with its reason. |
-| vo10c | Proof: ledger totals | 146.4 | 149.7 | Two approvals, one nudge, one block, each with its reason. |
-| vo6 | Closing | 153.9 | 158.1 | Let your agents shop, without handing them an unchecked wallet. SpendGuard. |
+| vo10a | Proof: PayPal dashboard | 102.8 | 106.7 | On PayPal's side, the money only moved when the guard said yes. |
+| vo10b | Proof: ledger | 112.8 | 115.1 | Every decision is logged with its reason. |
+| vo10c | Proof: ledger totals | 115.4 | 118.7 | Two approvals, one nudge, one block, each with its reason. |
+| vo6 | Closing | 122.9 | 127.1 | Let your agents shop, without handing them an unchecked wallet. SpendGuard. |
 
 ## As one block
 
@@ -43,10 +39,6 @@ Captions are burned in from the same lines (`compositions/captions.html`). Sourc
 > Say yes, and that purchase goes through.
 > Now tell it to buy the poisoned listing anyway.
 > PayPal approves it. SpendGuard still blocks it, and voids the payment.
-> And it isn't tied to our app. Any agent that connects over MCP gets the same guard.
-> Here, an outside agent shops through the hosted server.
-> This agent fell for the poisoned listing. SpendGuard didn't: blocked, authorization voided.
-> It tries again, and this time it's right.
 > On PayPal's side, the money only moved when the guard said yes.
 > Every decision is logged with its reason.
 > Two approvals, one nudge, one block, each with its reason.
